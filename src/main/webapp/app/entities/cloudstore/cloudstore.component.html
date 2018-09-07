@@ -1,0 +1,108 @@
+<div style="display: block">
+    <div style="float: left; width: 15%">
+        <div class="btn-wrapper">
+            <label for="openSettingButton" class="cloud-btn">Settings</label>
+            <input type="button" id="openSettingButton" class="form-control" (onclick)="openSettings()">
+        </div>
+    </div>
+    <div class="filesCard">
+        <div id="breadcrumb" class="cloud-breadcrumb">
+            <ul>
+                <li><a href="#">CloudStore</a></li>
+                <li><a href="#">Dir1</a></li>
+                <li><a href="#">Dir2 15</a></li>
+                <li><span>Dir3</span></li>
+            </ul>
+        </div>
+        <div class="table-wrapper">
+            <div class="table-scroll">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>
+                            <label id="selectAll" class="cloud-checkbox">
+                                <input type="checkbox">
+                                <span class="cloud-checkmark"></span>
+                            </label>
+                        </th>
+                        <th>
+                            <span class="text"> Folder NameR </span>
+                        </th>
+                        <th>
+                            <span class="text"> Creation Date </span>
+                        </th>
+                        <th>
+
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr *ngFor="let elem of tableData; let i = index">
+                        <td>
+                            <label class="cloud-checkbox">
+                                <input type="checkbox">
+                                <span class="cloud-checkmark"></span>
+                            </label>
+                        </td>
+                        <td (click)="openFolder()">
+                            <p>
+                                <a href="javascript:void(0)">
+                                    <span class="glyphicon glyphicon-folder-open"></span>
+                                    <span>{{elem.fileName}}</span>
+                                </a>
+                            </p>
+                        </td>
+                        <td>
+                            09/05/2018
+                        </td>
+                        <td>
+                            <div class="float-right cloud-action-buttons">
+                                <div class="btn-file-wrapper">
+                                    <label for="move" class="cloud-file-btn">Move</label>
+                                    <input type="button" id="move" class="form-control" (onclick)="openSettings()">
+                                </div>
+                                <div class="btn-file-wrapper">
+                                    <label for="share" class="cloud-file-btn">Share</label>
+                                    <input type="button" id="share" class="form-control" (onclick)="openSettings()">
+                                </div>
+                                <div class="btn-file-wrapper">
+                                    <label for="delete" class="cloud-file-btn">Delete</label>
+                                    <input type="button" id="delete" class="form-control" (onclick)="openSettings()">
+                                </div>
+                            </div>
+
+                        </td>
+                    </tr>
+                    <tr>
+
+                    </tr>
+                    <tr>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div style="float: right; width: 15%">
+        <div class="btn-wrapper">
+            <label class="cloud-btn" for="file">Upload a file</label>
+            <input type="file" id="file" (change)="handleFileInput($event.target.files)" value="Upload">
+        </div>
+        <div class="btn-wrapper">
+            <label for="openNewFolder" class="cloud-btn">Add Folder</label>
+            <input type="button" id="openNewFolder" (onclick)="openModal()">
+        </div>
+    </div>
+
+    <div class="modal fade" id="newFolderModal" tabindex="-1" role="dialog">
+        <div class="modal-header">
+            Add folder
+        </div>
+        <div class="modal-body">
+            <input type="text" name="newFolderText" ([ng-model])="newDirectory.name" placeholder="Type folder name..."/>
+        </div>
+        <div class="modal-footer">
+            <input type="button" class="form-control float-right" value="Submit" name="submitFolderButton">
+        </div>
+    </div>
+</div>

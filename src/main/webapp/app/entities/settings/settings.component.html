@@ -1,0 +1,25 @@
+<div class="modal">
+    <div class="modal-header">
+        <h3>Settings</h3>
+    </div>
+    <div class="modal-body">
+        <div class="tab">
+            <button class="tablinks" onclick="openTab(event, 'General')">General</button>
+            <button class="tablinks" onclick="openTab(event, 'Security')">Security</button>
+        </div>
+
+        <div id="General" class="tabcontent">
+            <h3>General</h3>
+            <p>General Settings.</p>
+        </div>
+
+        <div id="Security" class="tabcontent">
+            <h3>Security</h3>
+            <p>Security settings</p>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <input type="button" value="Save" class="float-right">
+    </div>
+</div>
+<script>require('../../native')</script>
