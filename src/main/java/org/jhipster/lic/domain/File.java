@@ -2,6 +2,7 @@ package org.jhipster.lic.domain;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.Objects;
 
 @Entity
@@ -28,6 +29,9 @@ public class File implements Serializable {
 
     @Column(name = "DIRECTORY_ID")
     private Long directoryID;
+
+    @Column(name = "CREATION_DATE")
+    private Instant creationDate;
 
     public Long getId() {
         return id;
@@ -75,6 +79,14 @@ public class File implements Serializable {
 
     public void setDirectoryID(Long directoryID) {
         this.directoryID = directoryID;
+    }
+
+    public Instant getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Instant creationDate) {
+        this.creationDate = creationDate;
     }
 
     @Override

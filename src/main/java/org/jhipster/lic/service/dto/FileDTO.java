@@ -4,6 +4,7 @@ import org.jhipster.lic.domain.File;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.Size;
+import java.time.Instant;
 
 /**
  * Created by Madalin on 9/3/2018.
@@ -22,6 +23,8 @@ public class FileDTO {
 
     private Long directoryId;
 
+    private Instant creationDate;
+
     public FileDTO(){}
 
     public FileDTO(File file) {
@@ -31,6 +34,7 @@ public class FileDTO {
         this.userCode = file.getUserCode();
         this.fileUrl = file.getFileURL();
         this.directoryId = file.getDirectoryID();
+        this.creationDate = file.getCreationDate();
     }
 
     public Long getId() {
@@ -81,4 +85,11 @@ public class FileDTO {
         this.directoryId = directoryId;
     }
 
+    public Instant getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Instant creationDate) {
+        this.creationDate = creationDate;
+    }
 }

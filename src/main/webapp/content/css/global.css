@@ -167,7 +167,7 @@ Generic styles
 
 .btn-file-wrapper {
     overflow: hidden;
-    display: inline-block;
+    display: none;
     cursor: pointer;
 }
 
@@ -186,18 +186,13 @@ Generic styles
     border: 2px solid gray;
     color: gray;
     background-color: white;
-    border-radius: 8px;
+    border-radius: 20px;
     font-size: 15px;
     font-weight: bold;
-    width: 80px;
+    width: 70px;
     text-align: center;
     cursor: pointer;
     margin-top: 10px;
-}
-
-.cloud-file-btn:hover {
-    background: lightblue;
-    cursor: pointer;
 }
 
 .filesCard {
@@ -241,15 +236,14 @@ table {
 
 th,
 td {
-    padding: 8px;
     text-align: left;
     border-bottom: 1px solid #ddd;
     cursor: pointer;
     color: gray;
 }
 
-tr:hover {
-    background-color: lightblue;
+.cloud-td-th {
+    padding-left: 1%;
 }
 
 .tab {
@@ -355,8 +349,8 @@ Style the buttons inside the ta
 
 /* Style the checkmark/indicator */
 .cloud-checkbox .cloud-checkmark:after {
-    left: 7px;
-    top: 4px;
+    left: 6px;
+    top: 3px;
     width: 5px;
     height: 10px;
     border: solid white;
@@ -381,10 +375,25 @@ Cloud Table Overflow
     width: 100%;
 }
 .table-wrapper table * {
-    background: white;
-    color: black;
     height: 20px;
 }
+
+.table-wrapper table td {
+    height: 70px;
+}
+
+.table-wrapper table .cloud-action-buttons {
+    height: 40px;
+}
+
+.table-wrapper table .btn-file-wrapper {
+    height: 40px;
+}
+
+.table-wrapper table .cloud-file-btn {
+    height: 30px;
+}
+
 .table-wrapper table thead th .text {
     position: absolute;
     top: -11px;
@@ -397,13 +406,61 @@ Cloud Table Overflow
 }
 
 .cloud-action-buttons {
-    display: none;
+    /*display: none;*/
 }
 
-.table-wrapper table thead tr:hover .cloud-action-buttons {
-    display: block;
+.table-wrapper tr:hover {
+    background-color: lightblue;
 }
 
+.table-wrapper tr:hover .btn-file-wrapper{
+    display: inline-block;
+}
+
+#deleteLabel:hover {
+    background-color: red;
+    cursor: pointer;
+}
+
+#shareLabel:hover {
+    background-color: blue;
+    cursor: pointer;
+}
+
+#moveLabel:hover {
+    background-color: green;
+    cursor: pointer;
+}
+
+.modal-backdrop {
+    opacity:0.5 !important;
+}
+
+/* ==========================================================================
+SCROLL BAR CSS
+========================================================================== */
+
+/* width */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 5px grey;
+    border-radius: 10px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: grey;
+    border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: lightblue;
+}
 /* ==========================================================================
 make sure browsers use the pointer cursor for anchors, even with no href
 ========================================================================== */

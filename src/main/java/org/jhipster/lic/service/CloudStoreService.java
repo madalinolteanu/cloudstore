@@ -19,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -54,6 +55,7 @@ public class CloudStoreService {
         file.setDirectoryID(fileDTO.getDirectoryId());
         file.setFileURL(fileDTO.getFileUrl());
         file.setUserCode(fileDTO.getUserCode());
+        file.setCreationDate(Instant.now());
         fileRepository.save(file);
     }
 
@@ -84,8 +86,23 @@ public class CloudStoreService {
         directory.setDirectoryParent(directoryDTO.getDirectoryParent());
         directory.setUserCode(directoryDTO.getUserCode());
         directory.setDirectoryUrl(directoryDTO.getDirectoryUrl());
+        directory.setCreationDate(Instant.now());
         directoryRepository.save(directory);
         return true;
+    }
+
+    public boolean deleteDirectory(UserDTO userDTO, Long directoryId){
+        User user = userRepository.findOneByToken(userDTO.getToken());
+        Directory directory = directoryRepository.findByIdAndUserCode(directoryId, user.getUserCode());
+        directoryRepository.delete(directory);
+        return deleteStoredDirectory(directory.getDirectoryUrl(), directory.getDirectoryName());
+    }
+
+    public boolean deleteFile(UserDTO userDTO, Long fileId){
+        User user = userRepository.findOneByToken(userDTO.getToken());
+        File file = fileRepository.findByIdAndUserCode(fileId, user.getUserCode());
+        fileRepository.delete(file);
+        return deleteStoredDirectory(file.getFileURL(), file.getFileName());
     }
 
     private Integer getNextFileId(){
@@ -114,5 +131,10 @@ public class CloudStoreService {
         }
 
         return (directory!=null && directory.getId()!=null ? Math.max(Integer.parseInt(directory.getId() + ""), 100000) : 100000)+1;
+    }
+
+    private boolean deleteStoredDirectory(String url, String name){
+
+        return true;
     }
 }

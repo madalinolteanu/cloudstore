@@ -8,6 +8,10 @@ import { CloudStore } from './cloudstore.model';
 import { TableData } from '../../shared/models/table-data';
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {DirectoryComponent} from "../directory/directory.component";
+import {ShareComponent} from "../../shared/modals/share/share-modal";
+import {MoveComponent} from "../../shared/modals/move/move-modal";
+import {DeleteComponent} from "../../shared/modals/delete/delete-modal";
+import {SettingsComponent} from "../settings/settings.component";
 
 @Component({
     selector: 'jhi-cloudstore',
@@ -16,7 +20,7 @@ import {DirectoryComponent} from "../directory/directory.component";
 })
 export class CloudStoreComponent implements OnInit {
     public tableData: TableData[];
-    folderType: 'folder';
+    folderType: string;
     fileToUpload: File;
     currentDirId: number;
 
@@ -36,6 +40,7 @@ export class CloudStoreComponent implements OnInit {
             }
         }
         let tableData = this.tableData;
+        let folderType = 'folder';
         this.cloudStoreService.getFolders().subscribe((data: CloudStore) => {
             tableData = Array<TableData>();
             if (data.successMessage != null) {
@@ -43,10 +48,12 @@ export class CloudStoreComponent implements OnInit {
                 for (let folder of data.directories as Directory[]) {
                     tableData.push(new TableData());
                     tableData[index].index = index;
+                    tableData[index].id = folderType + "-" + folder.id;
                     tableData[index].fileName = folder.directoryName;
-                    tableData[index].fileType = this.folderType;
+                    tableData[index].fileType = folderType;
                     tableData[index].fileUrl = folder.directoryUrl;
                     tableData[index].parentId = folder.directoryParent;
+                    tableData[index].creationDate = folder.creationDate.substring(0, 10);
                     index++;
                 }
                 this.cloudStoreService.getFiles().subscribe((data: CloudStore) => {
@@ -54,10 +61,12 @@ export class CloudStoreComponent implements OnInit {
                         for (let file of data.files as UserFile[]) {
                             tableData.push(new TableData());
                             tableData[index].index = index;
+                            tableData[index].id = file.fileType + "-" + file.id;
                             tableData[index].fileName = file.fileName;
                             tableData[index].fileUrl = file.fileType;
                             tableData[index].fileName = file.fileName;
                             tableData[index].parentId = file.directoryId;
+                            tableData[index].creationDate = file.creationDate.substring(0, 10);
                             index++;
                         }
                     }
@@ -84,5 +93,21 @@ export class CloudStoreComponent implements OnInit {
         console.log('modalOpened');
     }
 
-    openSettings() {}
+    openSettings() {
+        this.nbModal.open(SettingsComponent);
+    }
+
+    share(id: string) {
+        this.nbModal.open(ShareComponent);
+    }
+
+    move(id: string) {
+        this.nbModal.open(MoveComponent);
+    }
+
+    delete(id: string) {
+        this.$localStorage.store('selectedFile', id);
+        this.nbModal.open(DeleteComponent);
+
+    }
 }

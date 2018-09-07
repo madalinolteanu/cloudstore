@@ -12,3 +12,6 @@ export * from './models/base-entity';
 export * from './shared-common.module';
 export * from './shared.module';
 export * from './util/datepicker-adapter';
+export * from './modals/move/move-modal';
+export * from './modals/delete/delete-modal';
+export * from './modals/share/share-modal';

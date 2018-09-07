@@ -147,4 +147,44 @@ public class CloudStoreController {
         return response;
     }
 
+    @PostMapping("/directory/delete")
+    @Timed
+    public CloudStoreDTO deleteDirectory(@RequestParam(value = "token") String token, @Valid @RequestBody String directoryId){
+        CloudStoreDTO response = new CloudStoreDTO();
+        UserDTO userDTO = userService.getUserByToken(token);
+        if(userDTO != null){
+            if(cloudStoreService.deleteDirectory(userDTO, Long.parseLong(directoryId))){
+                response.setSuccessMessage("SUCCESS");
+                response.setSuccessCode(200);
+            } else {
+                response.setErrorMessage("Error!! Delete folder action failed!");
+                response.setErrorCode(500);
+            }
+        } else {
+            response.setErrorMessage("Error!! User not found!");
+            response.setErrorCode(500);
+        }
+        return response;
+    }
+
+    @PostMapping("/file/delete")
+    @Timed
+    public CloudStoreDTO deleteFile(@RequestParam(value = "token") String token, @Valid @RequestBody String fileId){
+        CloudStoreDTO response = new CloudStoreDTO();
+        UserDTO userDTO = userService.getUserByToken(token);
+        if(userDTO != null){
+            if(cloudStoreService.deleteFile(userDTO, Long.parseLong(fileId))){
+                response.setSuccessMessage("SUCCESS");
+                response.setSuccessCode(200);
+            } else {
+                response.setErrorMessage("Error!! Delete folder action failed!");
+                response.setErrorCode(500);
+            }
+        } else {
+            response.setErrorMessage("Error!! User not found!");
+            response.setErrorCode(500);
+        }
+        return response;
+    }
+
 }

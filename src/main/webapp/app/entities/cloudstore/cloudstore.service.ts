@@ -11,6 +11,7 @@ import {Directory} from "../directory/directory.model";
 })
 export class CloudStoreService {
     private resourceUrl = '/api/cloudstore';
+    private folderType = 'folder';
 
     constructor(private http: HttpClient, private router: Router, private $localStorage: LocalStorageService) {}
 
@@ -60,5 +61,16 @@ export class CloudStoreService {
         newFolder.directoryParent = -1;
         const token = this.$localStorage.retrieve('token');
         return this.http.post(this.resourceUrl + '/directory/create?token=' + token, newFolder);
+    }
+
+    deleteFile(): any {
+        const selectedFile = this.$localStorage.retrieve('selectedFile');
+        const array = selectedFile.split("-");
+        const token = this.$localStorage.retrieve('token');
+        if(array[0] == this.folderType){
+            return this.http.post(this.resourceUrl + '/directory/delete?token=' + token, array[1]);
+        } else {
+            return this.http.post(this.resourceUrl + '/file/delete?token=' + token, array[1]);
+        }
     }
 }

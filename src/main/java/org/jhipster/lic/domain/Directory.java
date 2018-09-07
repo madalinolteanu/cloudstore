@@ -2,6 +2,7 @@ package org.jhipster.lic.domain;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.Objects;
 
 @Entity
@@ -25,6 +26,9 @@ public class Directory implements Serializable {
 
     @Column(name = "DIRECTORY_PARENT")
     private Long directoryParent;
+
+    @Column(name = "CREATION_DATE")
+    private Instant creationDate;
 
     public static long getSerialVersionUID() {
         return serialVersionUID;
@@ -68,6 +72,14 @@ public class Directory implements Serializable {
 
     public void setDirectoryUrl(String directoryUrl) {
         this.directoryUrl = directoryUrl;
+    }
+
+    public Instant getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Instant creationDate) {
+        this.creationDate = creationDate;
     }
 
     @Override

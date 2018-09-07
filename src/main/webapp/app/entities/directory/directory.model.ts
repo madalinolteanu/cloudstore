@@ -5,6 +5,7 @@ export class Directory implements BaseEntity {
         public directoryName?: string,
         public userCode?: string,
         public directoryUrl?: string,
-        public directoryParent?: number
+        public directoryParent?: number,
+        public creationDate?: string
     ) {}
 }

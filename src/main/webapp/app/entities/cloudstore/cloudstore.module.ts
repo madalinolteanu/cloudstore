@@ -6,6 +6,7 @@ import { CloudStoreService } from './cloudstore.service';
 import { cloudStoreRoute } from './cloudstore.route';
 import {DirectoryComponent} from "../directory/directory.component";
 import { FormsModule } from '@angular/forms';
+import {SettingsComponent} from "../settings/settings.component";
 
 
 const ENTITY_STATES = [...cloudStoreRoute];
@@ -15,8 +16,8 @@ const ENTITY_STATES = [...cloudStoreRoute];
         RouterModule.forRoot(ENTITY_STATES, { useHash: true }),
         FormsModule
     ],
-    declarations: [DirectoryComponent, CloudStoreComponent],
-    entryComponents: [DirectoryComponent],
+    declarations: [DirectoryComponent, CloudStoreComponent, SettingsComponent],
+    entryComponents: [DirectoryComponent, SettingsComponent],
     providers: [CloudStoreService]
 })
 export class CloudStoreModule {}

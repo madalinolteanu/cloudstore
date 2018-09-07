@@ -4,11 +4,12 @@ import { BaseEntity } from './base-entity';
  */
 export class TableData implements BaseEntity {
     constructor(
-        public id?: number,
+        public id?: string,
         public fileName?: string,
         public fileType?: string,
         public fileUrl?: string,
         public parentId?: number,
-        public index?: number
+        public index?: number,
+        public creationDate?: string
     ) {}
 }

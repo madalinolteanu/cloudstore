@@ -6,6 +6,7 @@ export class UserFile implements BaseEntity {
         public fileType?: string,
         public userCode?: string,
         public fileUrl?: string,
-        public directoryId?: number
+        public directoryId?: number,
+        public creationDate?: string
     ) {}
 }

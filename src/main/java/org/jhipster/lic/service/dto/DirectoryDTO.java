@@ -3,6 +3,8 @@ package org.jhipster.lic.service.dto;
 import afu.org.checkerframework.checker.igj.qual.I;
 import org.jhipster.lic.domain.Directory;
 
+import java.time.Instant;
+
 /**
  * Created by Madalin on 9/3/2018.
  */
@@ -18,6 +20,8 @@ public class DirectoryDTO {
 
     private Long directoryParent;
 
+    private Instant creationDate;
+
     public DirectoryDTO(){}
 
     public DirectoryDTO(Directory directory) {
@@ -26,6 +30,7 @@ public class DirectoryDTO {
         this.directoryParent = directory.getDirectoryParent();
         this.userCode = directory.getUserCode();
         this.directoryUrl = directory.getDirectoryUrl();
+        this.creationDate = directory.getCreationDate();
     }
 
     public Long getId() {
@@ -66,5 +71,13 @@ public class DirectoryDTO {
 
     public void setDirectoryUrl(String directoryUrl) {
         this.directoryUrl = directoryUrl;
+    }
+
+    public Instant getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Instant creationDate) {
+        this.creationDate = creationDate;
     }
 }
