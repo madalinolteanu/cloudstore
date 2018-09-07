@@ -123,4 +123,28 @@ public class CloudStoreController {
         }
         return response;
     }
+
+    @PostMapping("/directory/create")
+    @Timed
+    public CloudStoreDTO createDirectory(@RequestParam(value = "token") String token, @Valid @RequestBody DirectoryDTO directoryDTO){
+        CloudStoreDTO response = new CloudStoreDTO();
+        UserDTO userDTO = userService.getUserByToken(token);
+        if(userDTO != null){
+            directoryDTO.setUserCode(userService.getUserCodeByToken(token));
+            if(directoryDTO.getDirectoryParent() == -1)
+                directoryDTO.setDirectoryParent(null);
+            if(cloudStoreService.createDirectory(directoryDTO)){
+                response.setSuccessMessage("SUCCESS");
+                response.setSuccessCode(200);
+            } else {
+                response.setErrorMessage("Error!! Add folder action failed!");
+                response.setErrorCode(500);
+            }
+        } else {
+            response.setErrorMessage("Error!! User not found!");
+            response.setErrorCode(500);
+        }
+        return response;
+    }
+
 }

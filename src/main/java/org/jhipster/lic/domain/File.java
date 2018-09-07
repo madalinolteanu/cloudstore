@@ -12,7 +12,6 @@ public class File implements Serializable {
 
     @Id
     @Column(name = "FILE_ID")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "USER_CODE")

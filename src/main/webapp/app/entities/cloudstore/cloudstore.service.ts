@@ -4,6 +4,7 @@ import { LocalStorageService } from 'ngx-webstorage';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { UserFile } from '../file/file.model';
+import {Directory} from "../directory/directory.model";
 
 @Injectable({
     providedIn: 'root'
@@ -50,5 +51,14 @@ export class CloudStoreService {
                 return data.files[0];
             } else return null;
         });
+    }
+
+    addFolder(addFolder: string): any {
+        const newFolder = new Directory();
+        newFolder.directoryName = addFolder;
+        newFolder.directoryUrl = ".";
+        newFolder.directoryParent = -1;
+        const token = this.$localStorage.retrieve('token');
+        return this.http.post(this.resourceUrl + '/directory/create?token=' + token, newFolder);
     }
 }

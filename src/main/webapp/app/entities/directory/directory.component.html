@@ -1,3 +1,29 @@
-<p>
-  directory works!
-</p>
+<div class="modal-header">
+    <h4 class="modal-title" jhitranslate="login.title" ng-reflect-jhi-translate="login.title">
+        <span>New Folder</span>
+    </h4>
+    <button aria-label="Close" class="close" data-dismiss="modal" type="button" (click)="modalDismiss()">
+        <span aria-hidden="true">x</span>
+    </button>
+</div>
+<div class="modal-body">
+    <div class="row justify-content-center">
+        <div class="col-md-8"> <!--bindings={}--></div>
+        <div class="col-md-8">
+            <form class="form ng-pristine ng-valid ng-touched" novalidate="" role="form">
+                <div class="form-group">
+                    <label for="username" jhitranslate="global.form.username"
+                           ng-reflect-jhi-translate="global.form.username">
+                        <span>Folder Name</span>
+                    </label>
+                    <input class="form-control ng-pristine ng-valid ng-touched" id="username" name="username"
+                           placeholder="Type folder Name" type="text" [(ngModel)]="newFolderName"
+                           ng-reflect-name="username">
+                </div>
+                <button class="btn btn-primary" jhitranslate="login.form.button" (click)="addFolder()" style="float: right"
+                        ng-reflect-jhi-translate="login.form.button"><span>Create Folder</span>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>

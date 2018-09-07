@@ -9,9 +9,9 @@ import java.util.Objects;
 public class Directory implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
     @Id
     @Column(name = "DIRECTORY_ID")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "USER_CODE")
@@ -19,6 +19,9 @@ public class Directory implements Serializable {
 
     @Column(name = "DIRECTORY_NAME")
     private String directoryName;
+
+    @Column(name = "DIRECTORY_URL")
+    private String directoryUrl;
 
     @Column(name = "DIRECTORY_PARENT")
     private Long directoryParent;
@@ -59,6 +62,14 @@ public class Directory implements Serializable {
         this.id = id;
     }
 
+    public String getDirectoryUrl() {
+        return directoryUrl;
+    }
+
+    public void setDirectoryUrl(String directoryUrl) {
+        this.directoryUrl = directoryUrl;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -80,7 +91,11 @@ public class Directory implements Serializable {
     @Override
     public String toString() {
         return "Directory{" +
-            "directoryName='" + directoryName + '\'' +
-            "}";
+            "id=" + id +
+            ", userCode='" + userCode + '\'' +
+            ", directoryName='" + directoryName + '\'' +
+            ", directoryUrl='" + directoryUrl + '\'' +
+            ", directoryParent=" + directoryParent +
+            '}';
     }
 }

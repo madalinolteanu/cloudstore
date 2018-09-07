@@ -77,6 +77,17 @@ public class CloudStoreService {
         return filesDTO;
     }
 
+    public boolean createDirectory(DirectoryDTO directoryDTO){
+        Directory directory = new Directory();
+        directory.setId(Long.parseLong(getNextDirectoryId() + ""));
+        directory.setDirectoryName(directoryDTO.getDirectoryName());
+        directory.setDirectoryParent(directoryDTO.getDirectoryParent());
+        directory.setUserCode(directoryDTO.getUserCode());
+        directory.setDirectoryUrl(directoryDTO.getDirectoryUrl());
+        directoryRepository.save(directory);
+        return true;
+    }
+
     private Integer getNextFileId(){
         List<File> allBrList = this.fileRepository.findAll();
         File file = null;
@@ -89,5 +100,19 @@ public class CloudStoreService {
         }
 
         return (file!=null && file.getId()!=null ? Math.max(Integer.parseInt(file.getId() + ""), 100000) : 100000)+1;
+    }
+
+    private Integer getNextDirectoryId(){
+        List<Directory> allBrList = this.directoryRepository.findAll();
+        Directory directory = null;
+        Optional<Directory> fileStream = allBrList.stream()
+            .sorted(Comparator.comparing(Directory::getId).reversed()).findFirst();
+
+
+        if(fileStream != null && fileStream.isPresent()){
+            directory = fileStream.get();
+        }
+
+        return (directory!=null && directory.getId()!=null ? Math.max(Integer.parseInt(directory.getId() + ""), 100000) : 100000)+1;
     }
 }

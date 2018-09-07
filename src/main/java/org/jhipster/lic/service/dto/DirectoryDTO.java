@@ -18,11 +18,14 @@ public class DirectoryDTO {
 
     private Long directoryParent;
 
+    public DirectoryDTO(){}
+
     public DirectoryDTO(Directory directory) {
         this.id = directory.getId();
         this.directoryName = directory.getDirectoryName();
         this.directoryParent = directory.getDirectoryParent();
         this.userCode = directory.getUserCode();
+        this.directoryUrl = directory.getDirectoryUrl();
     }
 
     public Long getId() {
@@ -55,5 +58,13 @@ public class DirectoryDTO {
 
     public void setDirectoryParent(Long directoryParent) {
         this.directoryParent = directoryParent;
+    }
+
+    public String getDirectoryUrl() {
+        return directoryUrl;
+    }
+
+    public void setDirectoryUrl(String directoryUrl) {
+        this.directoryUrl = directoryUrl;
     }
 }

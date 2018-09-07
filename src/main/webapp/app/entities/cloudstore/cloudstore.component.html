@@ -20,20 +20,22 @@
                     <thead>
                     <tr>
                         <th>
-                            <label id="selectAll" class="cloud-checkbox">
+                            <span style="top: -9px;position: absolute;width: 10%;height: 29px;"></span>
+                            <label style="top: -17px;z-index: 2;position: absolute;
+                            width: 10%;background-color: white;"
+                                   id="selectAll" class="cloud-checkbox">
                                 <input type="checkbox">
                                 <span class="cloud-checkmark"></span>
                             </label>
                         </th>
                         <th>
-                            <span class="text"> Folder NameR </span>
+                            <span class="text" style="width: 50%"> Folder NameR </span>
                         </th>
                         <th>
-                            <span class="text"> Creation Date </span>
+                            <span class="text" style="width: 46%;right: -1px;
+                                border-right: 1px solid rgba(0, 0, 0, 0.125);"> Creation Date </span>
                         </th>
-                        <th>
-
-                        </th>
+                        <th></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -90,19 +92,7 @@
         </div>
         <div class="btn-wrapper">
             <label for="openNewFolder" class="cloud-btn">Add Folder</label>
-            <input type="button" id="openNewFolder" (onclick)="openModal()">
-        </div>
-    </div>
-
-    <div class="modal fade" id="newFolderModal" tabindex="-1" role="dialog">
-        <div class="modal-header">
-            Add folder
-        </div>
-        <div class="modal-body">
-            <input type="text" name="newFolderText" ([ng-model])="newDirectory.name" placeholder="Type folder name..."/>
-        </div>
-        <div class="modal-footer">
-            <input type="button" class="form-control float-right" value="Submit" name="submitFolderButton">
+            <input type="button" id="openNewFolder" (click)="openFolderModal()">
         </div>
     </div>
 </div>

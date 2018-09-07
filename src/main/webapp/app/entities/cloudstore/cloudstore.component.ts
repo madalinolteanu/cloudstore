@@ -6,6 +6,8 @@ import { LocalStorageService } from 'ngx-webstorage';
 import { UserFile } from '../file/file.model';
 import { CloudStore } from './cloudstore.model';
 import { TableData } from '../../shared/models/table-data';
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {DirectoryComponent} from "../directory/directory.component";
 
 @Component({
     selector: 'jhi-cloudstore',
@@ -18,7 +20,12 @@ export class CloudStoreComponent implements OnInit {
     fileToUpload: File;
     currentDirId: number;
 
-    constructor(private router: Router, private $localStorage: LocalStorageService, private cloudStoreService: CloudStoreService) {}
+    constructor(
+        private router: Router,
+        private $localStorage: LocalStorageService,
+        private cloudStoreService: CloudStoreService,
+        private nbModal: NgbModal
+    ) {}
 
     ngOnInit() {
         this.currentDirId = -1;
@@ -60,8 +67,8 @@ export class CloudStoreComponent implements OnInit {
         });
     }
 
-    openFolder() {
-        console.log('open');
+    openFolderModal() {
+        this.nbModal.open(DirectoryComponent);
     }
 
     handleFileInput(files: FileList) {

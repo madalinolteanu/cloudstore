@@ -13,8 +13,7 @@ public class Settings {
 
 
     @Column(name = "SETTING_ID")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @Id
     @Column(name = "USER_CODE")
@@ -35,11 +34,11 @@ public class Settings {
     @JoinTable(name= "FONT_CODE")
     private Font fontType;
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

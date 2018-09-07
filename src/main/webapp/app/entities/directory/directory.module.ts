@@ -1,9 +1,11 @@
-import { NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { DirectoryComponent } from './directory.component';
+import { FormsModule } from '@angular/forms';
+
 
 @NgModule({
-    imports: [CommonModule],
-    declarations: [DirectoryComponent]
+    imports: [CommonModule, FormsModule],
+    declarations: [],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class DirectoryModule {}
