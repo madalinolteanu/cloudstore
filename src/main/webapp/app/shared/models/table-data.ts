@@ -10,6 +10,7 @@ export class TableData implements BaseEntity {
         public fileUrl?: string,
         public parentId?: number,
         public index?: number,
-        public creationDate?: string
+        public creationDate?: string,
+        public data?: any
     ) {}
 }

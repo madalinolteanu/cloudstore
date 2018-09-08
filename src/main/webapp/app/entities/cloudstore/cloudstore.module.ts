@@ -7,6 +7,7 @@ import { cloudStoreRoute } from './cloudstore.route';
 import {DirectoryComponent} from "../directory/directory.component";
 import { FormsModule } from '@angular/forms';
 import {SettingsComponent} from "../settings/settings.component";
+import {CloudFileComponent} from "../file/file.component";
 
 
 const ENTITY_STATES = [...cloudStoreRoute];
@@ -17,7 +18,7 @@ const ENTITY_STATES = [...cloudStoreRoute];
         FormsModule
     ],
     declarations: [DirectoryComponent, CloudStoreComponent, SettingsComponent],
-    entryComponents: [DirectoryComponent, SettingsComponent],
+    entryComponents: [DirectoryComponent, SettingsComponent, CloudFileComponent],
     providers: [CloudStoreService]
 })
 export class CloudStoreModule {}

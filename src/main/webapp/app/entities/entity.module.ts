@@ -7,7 +7,7 @@ import { SettingsModule } from './settings/settings.module';
 import { FontComponent } from './font/font.component';
 import { ThemeComponent } from './theme/theme.component';
 import { LanguageComponent } from './language/language.component';
-import { FileComponent } from './file/file.component';
+import {CloudFileComponent} from './file/file.component';
 import { FileModule } from './file/file.module';
 import { ThemeModule } from './theme/theme.module';
 import { LanguageModule } from './language/language.module';
@@ -31,7 +31,7 @@ import { FontModule } from './font/font.module';
         LanguageModule,
         SettingsModule,
     ],
-    declarations: [FontComponent, ThemeComponent, LanguageComponent, FileComponent],
+    declarations: [FontComponent, ThemeComponent, LanguageComponent, CloudFileComponent],
     entryComponents: [],
     providers: [],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]

@@ -12,6 +12,7 @@ import {ShareComponent} from '../../shared/modals/share/share-modal';
 import {MoveComponent} from '../../shared/modals/move/move-modal';
 import {DeleteComponent} from '../../shared/modals/delete/delete-modal';
 import {SettingsComponent} from '../settings/settings.component';
+import {CloudFileComponent} from "../file/file.component";
 
 @Component({
     selector: 'jhi-cloudstore',
@@ -97,7 +98,9 @@ export class CloudStoreComponent implements OnInit {
 
     }
 
-    openFolder(id: any, name: any){
+    openFolder(elem: any){
+        let id = elem.id;
+        let name = elem.name;
         const array = id.split('+');
         if(array[0] == 'folder'){
             this.crumbData.push({
@@ -121,7 +124,9 @@ export class CloudStoreComponent implements OnInit {
                 }
             }
         } else {
-            console.log('file selected');
+
+            let selectedFile = elem;
+            this.nbModal.open(CloudFileComponent);
         }
 
     }
@@ -155,6 +160,7 @@ export class CloudStoreComponent implements OnInit {
                             tableData[index].fileName = file.fileName;
                             tableData[index].parentId = file.directoryId;
                             tableData[index].creationDate = file.creationDate.substring(0, 10);
+                            tableData[index].data = file.data;
                             index++;
                         }
                     }

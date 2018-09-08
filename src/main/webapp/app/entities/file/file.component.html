@@ -11,11 +11,11 @@
         <div class="col-md-8"> <!--bindings={}--></div>
         <div class="col-md-8">
             <form class="form ng-pristine ng-valid ng-touched" novalidate="" role="form">
-                <iframe src='https://view.officeapps.live.com/op/embed.aspx?src=http://remote.url.tld/path/to/document.doc'
-                        width='1366px' height='623px' frameborder='0'>This is an embedded
-                    <a target='_blank' href='http://office.com'>Microsoft Office</a> document, powered by
-                    <a target='_blank' href='http://office.com/webapps'>Office Online</a>.
-                </iframe>
+                <div class="form-group">
+                    <iframe src="https://www.w3schools.com">
+                        <p>Your browser does not support iframes.</p>
+                    </iframe>
+                </div>
                 <button class="btn btn-primary" jhitranslate="login.form.button" (click)="addFolder()" style="float: right"
                         ng-reflect-jhi-translate="login.form.button"><span>Create Folder</span>
                 </button>
