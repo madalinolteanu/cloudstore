@@ -12,23 +12,23 @@ public class Right implements Serializable {
     @Id
     @Column(name = "RIGHT_ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @Column(name = "RIGHT_NAME")
     private String rightName;
 
     @Column(name = "RIGHT_CODE")
-    private Integer rightCode;
+    private String rightCode;
 
     public static long getSerialVersionUID() {
         return serialVersionUID;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -36,7 +36,7 @@ public class Right implements Serializable {
         return rightName;
     }
 
-    public Integer getRightCode() {
+    public String getRightCode() {
         return rightCode;
     }
 
@@ -44,7 +44,7 @@ public class Right implements Serializable {
         this.rightName = rightName;
     }
 
-    public void setRightCode(Integer rightCode) {
+    public void setRightCode(String rightCode) {
         this.rightCode = rightCode;
     }
 

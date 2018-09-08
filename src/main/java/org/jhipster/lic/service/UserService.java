@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.security.auth.login.FailedLoginException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -40,12 +42,15 @@ public class UserService {
 
     private final CacheManager cacheManager;
 
+    private final SettingsService settingsService;
+
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, CacheManager cacheManager,
-                       TokenProvider tokenProvider) {
+                       TokenProvider tokenProvider, SettingsService settingsService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.cacheManager = cacheManager;
         this.tokenProvider = tokenProvider;
+        this.settingsService = settingsService;
     }
 
     public Optional<User> activateRegistration(String key) {
@@ -65,22 +70,32 @@ public class UserService {
     public UserDTO getByUsernameAndPassword(UserDTO requestedUser) throws FailedLoginException {
         UserDTO responseUser;
         String currentClearPassword = requestedUser.getPassword();
-        User user = userRepository.findOneByUserCode(requestedUser.hashCode() + "");
-        String token;
-        if(user != null && passwordEncoder.matches(currentClearPassword, user.getPassword())){
-            responseUser = new UserDTO(user);
-            token = tokenProvider.createUserToken(responseUser.getUserCode(), true, responseUser.getUserType());
-            user.setToken(token);
-            userRepository.save(user);
-            responseUser.setToken(token);
-            return responseUser;
-        } else {
+        String originalString = requestedUser.hashCode() + "";
+        User user;
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] encodedhash = digest.digest(
+                originalString.getBytes(StandardCharsets.UTF_8));
+            user = userRepository.findOneByUserCode(bytesToHex(encodedhash));
+            String token;
+            if(user != null && passwordEncoder.matches(currentClearPassword, user.getPassword())){
+                responseUser = new UserDTO(user);
+                token = tokenProvider.createUserToken(responseUser.getUserCode(), true, responseUser.getUserType());
+                user.setToken(token);
+                userRepository.save(user);
+                responseUser.setToken(token);
+                return responseUser;
+            } else {
+                throw new FailedLoginException();
+            }
+        } catch (Exception e) {
             throw new FailedLoginException();
         }
     }
 
-    public UserDTO findOneByUserCode(int userCode){
-        User user = userRepository.findOneByUserCode(userCode + "");
+    public UserDTO findOneByUserCode(byte[] userCode){
+
+        User user = userRepository.findOneByUserCode(bytesToHex(userCode) + "");
         if(user != null)
             return new UserDTO(user);
         else
@@ -97,8 +112,9 @@ public class UserService {
         return null;
     }
 
-    public UserDTO createUser(UserDTO userDTO) {
+    public UserDTO createUser(UserDTO userDTO, byte[] encodedhash) {
         User user = new User();
+        UserDTO responeUser;
         user.setId(Long.parseLong(getNextUserId() + ""));
         user.setUserType(userDTO.getUserType());
         user.setFirstName(userDTO.getFirstName());
@@ -106,7 +122,7 @@ public class UserService {
         user.setEmail(userDTO.getEmail());
         user.setImageUrl(userDTO.getImageUrl());
         user.setUsername(userDTO.getUsername());
-        user.setUserCode(userDTO.hashCode() + "");
+        user.setUserCode(bytesToHex(encodedhash));
         user.setActivationKey("12345");
         user.setCreationDate(Instant.now());
         String encryptedPassword = passwordEncoder.encode(userDTO.getPassword());
@@ -116,7 +132,10 @@ public class UserService {
         userRepository.save(user);
         this.clearUserCaches(user);
         log.debug("Created Information for User: {}", user);
-        return new UserDTO(user);
+
+        responeUser = new UserDTO(user);
+        settingsService.addSettings(responeUser);
+        return responeUser;
     }
 
     public UserDTO getUserByToken(String token){
@@ -238,5 +257,15 @@ public class UserService {
         }
 
         return (user!=null && user.getId()!=null ? Math.max(Integer.parseInt(user.getId() + ""), 100000) : 100000)+1;
+    }
+
+    private static String bytesToHex(byte[] hash) {
+        StringBuffer hexString = new StringBuffer();
+        for (int i = 0; i < hash.length; i++) {
+            String hex = Integer.toHexString(0xff & hash[i]);
+            if(hex.length() == 1) hexString.append('0');
+            hexString.append(hex);
+        }
+        return hexString.toString();
     }
 }

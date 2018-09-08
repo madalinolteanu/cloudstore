@@ -32,16 +32,7 @@ export class AccountService {
         const account = new Account();
         account.username = username;
         account.password = password;
-        const router = this.router;
-        const localStorage = this.$localStorage;
-        return this.http.post(this.resourceUrl + '/login', account).subscribe((data: CloudStore) => {
-            if (data.successMessage != null) {
-                localStorage.store('isLogged', true);
-                localStorage.store('token', data.userDTO.token);
-                this.$localStorage.store('currentDirId', -1);
-                router.navigate([this.dashboardUrl]);
-            } else return null;
-        });
+        return this.http.post(this.resourceUrl + '/login', account);
     }
 
     logout() {

@@ -12,13 +12,16 @@ import org.jhipster.lic.service.dto.CloudStoreDTO;
 import org.jhipster.lic.service.dto.DirectoryDTO;
 import org.jhipster.lic.service.dto.FileDTO;
 import org.jhipster.lic.service.dto.UserDTO;
+import org.jhipster.lic.service.util.CreateFiles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.CacheManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
 
@@ -66,17 +69,21 @@ public class CloudStoreService {
         return directoriesDTO;
     }
 
-    public List<FileDTO> getFiles(UserDTO userDTO,  Long directoryId) {
+    public List<FileDTO> getFiles(UserDTO userDTO, Long directoryId, String basePath) {
         User user = userRepository.findOneByToken(userDTO.getToken());
         List<File> filesDAO = fileRepository.findAllByUserCodeAndDirectoryID(user.getUserCode(), directoryId);
         List<FileDTO> filesDTO = new ArrayList<>();
+        FileDTO fileDTO;
         for(File file: filesDAO) {
-            filesDTO.add(new FileDTO(file));
+            fileDTO =  new FileDTO(file);
+            fileDTO.setData(getStoredFile(basePath + "/" +
+                user.getUserCode() + file.getFileURL(), file.getFileName()));
+            filesDTO.add(fileDTO);
         }
         return filesDTO;
     }
 
-    public boolean createDirectory(DirectoryDTO directoryDTO){
+    public boolean createDirectory(String path, DirectoryDTO directoryDTO){
         Directory directory = new Directory();
         directory.setId(Long.parseLong(getNextDirectoryId() + ""));
         directory.setDirectoryName(directoryDTO.getDirectoryName());
@@ -85,7 +92,7 @@ public class CloudStoreService {
         directory.setDirectoryUrl(directoryDTO.getDirectoryUrl());
         directory.setCreationDate(Instant.now());
         directoryRepository.save(directory);
-        return true;
+        return createDirToPath(path, new DirectoryDTO(directory));
     }
 
     public boolean deleteDirectory(UserDTO userDTO, Long directoryId){
@@ -168,5 +175,36 @@ public class CloudStoreService {
         }
 
         return true;
+    }
+
+    public boolean createDirToPath(String path, DirectoryDTO directory) {
+        CreateFiles createFiles = new CreateFiles();
+        path = path + "/" + directory.getUserCode()  + directory.getDirectoryUrl();
+
+        return createFiles.createDir(path, directory.getDirectoryName());
+    }
+
+    public boolean createUserDir(String path, String userCode) {
+        CreateFiles createFiles = new CreateFiles();
+        return createFiles.createDir(path, userCode);
+    }
+
+    public String createFileToPath(String path, MultipartFile file, UserDTO userDTO, String url) {
+        CreateFiles createFiles = new CreateFiles();
+        path = path + "/" + userDTO.getUserCode() + url;
+        return createFiles.createFile(path, file);
+    }
+
+    public boolean canCreateDir(String name, Long parentId){
+        return directoryRepository.findByDirectoryNameAndDirectoryParent(name, parentId) == null;
+    }
+
+    private MultipartFile getStoredFile(String path, String fileName){
+        CreateFiles createFiles = new CreateFiles();
+        try {
+            return createFiles.getFile(path, fileName);
+        } catch( IOException e){
+            return null;
+        }
     }
 }

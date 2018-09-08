@@ -30,6 +30,7 @@ spring:
             enabled: false # we use Webpack dev server + BrowserSync for livereload
     jackson:
         serialization.indent_output: true
+        serialization.FAIL_ON_EMPTY_BEANS: false
     datasource:
         type: com.zaxxer.hikari.HikariDataSource
         url: jdbc:oracle:thin:@localhost:1521:orcl

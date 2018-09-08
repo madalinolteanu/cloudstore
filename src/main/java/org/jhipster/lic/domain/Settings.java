@@ -19,20 +19,17 @@ public class Settings {
     @Column(name = "USER_CODE")
     private String userCode;
 
-    @OneToOne
-    @JoinColumn(name = "LANGUAGE")
-    private Language language;
+    @Column(name= "LANGUAGE")
+    private String language;
 
-    @OneToOne
-    @JoinColumn(name = "FONT_TYPE")
-    private Theme theme;
+    @Column(name= "THEME")
+    private String theme;
 
     @Column(name = "DATE_FORMAT")
     private String dateFormat;
 
-    @OneToOne
-    @JoinTable(name= "FONT_CODE")
-    private Font fontType;
+    @Column(name= "FONT_TYPE")
+    private String fontType;
 
     public Long getId() {
         return id;
@@ -50,19 +47,19 @@ public class Settings {
         this.userCode = userCode;
     }
 
-    public Language getLanguage() {
+    public String getLanguage() {
         return language;
     }
 
-    public void setLanguage(Language language) {
+    public void setLanguage(String language) {
         this.language = language;
     }
 
-    public Theme getTheme() {
+    public String getTheme() {
         return theme;
     }
 
-    public void setTheme(Theme theme) {
+    public void setTheme(String theme) {
         this.theme = theme;
     }
 
@@ -74,11 +71,11 @@ public class Settings {
         this.dateFormat = dateFormat;
     }
 
-    public Font getFontType() {
+    public String getFontType() {
         return fontType;
     }
 
-    public void setFontType(Font fontType) {
+    public void setFontType(String fontType) {
         this.fontType = fontType;
     }
 

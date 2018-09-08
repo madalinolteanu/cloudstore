@@ -29,7 +29,6 @@ export class DeleteComponent implements OnInit {
     deleteFile() {
         this.cloudService.deleteFile().subscribe((data: CloudStore) =>{
             if(data != null && data.successMessage != null) {
-                debugger;
                 this.activeModal.dismiss('success');
                 this.$localStorage.store('selectedFile', null);
                 location.reload();

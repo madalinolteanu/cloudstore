@@ -12,7 +12,6 @@ export class SettingsService {
     constructor(private http: HttpClient) {}
 
     getAllLanguages() {
-        debugger;
         return this.http.get(this.resourceUrl).subscribe(data => {
             return data;
         });

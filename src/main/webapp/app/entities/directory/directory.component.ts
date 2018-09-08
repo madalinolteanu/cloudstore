@@ -11,6 +11,7 @@ import {Router} from "@angular/router";
 })
 export class DirectoryComponent implements OnInit {
     newFolderName: string;
+    canCreateDir: boolean;
     constructor(
         public activeModal: NgbActiveModal,
         private addFolderModal: NgbModal,
@@ -18,7 +19,9 @@ export class DirectoryComponent implements OnInit {
         private router: Router
     ) {}
 
-    ngOnInit() {}
+    ngOnInit() {
+        this.canCreateDir = false;
+    }
 
     modalDismiss(){
         this.activeModal.dismiss('cancel');
@@ -27,11 +30,10 @@ export class DirectoryComponent implements OnInit {
     addFolder() {
         this.cloudService.addFolder(this.newFolderName).subscribe((data: CloudStore) =>{
             if(data != null && data.successMessage != null) {
-                debugger;
                 this.activeModal.dismiss('success');
                 location.reload();
             } else {
-                console.log(data.successMessage);
+                this.canCreateDir = true;
             }
         });
     }

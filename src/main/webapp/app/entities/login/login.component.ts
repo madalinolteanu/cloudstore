@@ -6,6 +6,7 @@ import { LoginService } from '../../core/login/login.service';
 import { SettingsService } from '../settings/settings.service';
 import { Router } from '@angular/router';
 import { LocalStorageService } from 'ngx-webstorage';
+import {CloudStore} from "../cloudstore/cloudstore.model";
 
 @Component({
     selector: 'jhi-login',
@@ -16,8 +17,8 @@ export class LoginComponent implements OnInit, OnDestroy {
     account: Account;
     username: string;
     password: string;
-    dashboardUrl: '/dashboard';
     registerUrl: '/register';
+    authenticationError: boolean;
 
     constructor(
         private accountService: AccountService,
@@ -29,8 +30,9 @@ export class LoginComponent implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit() {
-        this.username = '';
-        this.password = '';
+        this.username = null;
+        this.password = null;
+        this.authenticationError = false;
         this.systemLogin();
         if (this.$localStorage.retrieve('isLogged')) {
             this.router.navigate(['/dashboard']);
@@ -40,7 +42,20 @@ export class LoginComponent implements OnInit, OnDestroy {
     ngOnDestroy() {}
 
     login() {
-        this.accountService.login(this.username, this.password);
+        const router = this.router;
+        const localStorage = this.$localStorage;
+        this.accountService.login(this.username, this.password).subscribe((data: CloudStore) => {
+            if (data.successMessage != null) {
+                localStorage.store('isLogged', true);
+                localStorage.store('token', data.userDTO.token);
+                this.authenticationError = false;
+                localStorage.store('currentDirId', -1);
+                localStorage.store('currentUrl', '/');
+                router.navigate(['/dashboard']);
+            } else {
+                this.authenticationError = true;
+            }
+        });
     }
 
     systemLogin() {

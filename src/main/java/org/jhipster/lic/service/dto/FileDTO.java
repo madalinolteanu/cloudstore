@@ -25,6 +25,8 @@ public class FileDTO {
 
     private Instant creationDate;
 
+    private MultipartFile data;
+
     public FileDTO(){}
 
     public FileDTO(File file) {
@@ -91,5 +93,13 @@ public class FileDTO {
 
     public void setCreationDate(Instant creationDate) {
         this.creationDate = creationDate;
+    }
+
+    public MultipartFile getData() {
+        return data;
+    }
+
+    public void setData(MultipartFile data) {
+        this.data = data;
     }
 }

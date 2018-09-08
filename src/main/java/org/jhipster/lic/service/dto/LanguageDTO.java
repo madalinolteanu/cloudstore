@@ -1,26 +1,22 @@
-package org.jhipster.lic.domain;
+package org.jhipster.lic.service.dto;
 
-import javax.persistence.*;
-import java.io.Serializable;
+import org.jhipster.lic.domain.Language;
 
 /**
- * Created by Madalin on 9/3/2018.
+ * Created by Madalin on 9/8/2018.
  */
-@Entity
-@Table(name = "STORE_LANGUAGE_TABLE", schema = "LICENCE")
-public class Language implements Serializable {
-    private static final long serialVersionUID = 1L;
-
-    @Id
-    @Column(name = "LANGUAGE_ID")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class LanguageDTO {
     private Long id;
 
-    @Column(name = "LANGUAGE_NAME")
     private String languageName;
 
-    @Column(name = "LANGUAGE_CODE")
     private String languageCode;
+
+    public LanguageDTO(Language language) {
+        this.id = language.getId();
+        this.languageName = language.getLanguageName();
+        this.languageCode = language.getLanguageCode();
+    }
 
     public Long getId() {
         return id;
@@ -51,12 +47,11 @@ public class Language implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Language language = (Language) o;
+        LanguageDTO that = (LanguageDTO) o;
 
-        if (id != null ? !id.equals(language.id) : language.id != null) return false;
-        if (languageName != null ? !languageName.equals(language.languageName) : language.languageName != null)
-            return false;
-        return languageCode != null ? languageCode.equals(language.languageCode) : language.languageCode == null;
+        if (id != null ? !id.equals(that.id) : that.id != null) return false;
+        if (languageName != null ? !languageName.equals(that.languageName) : that.languageName != null) return false;
+        return languageCode != null ? languageCode.equals(that.languageCode) : that.languageCode == null;
     }
 
     @Override
@@ -69,10 +64,10 @@ public class Language implements Serializable {
 
     @Override
     public String toString() {
-        return "Language{" +
-            "languageId=" + id +
+        return "LanguageDTO{" +
+            "id=" + id +
             ", languageName='" + languageName + '\'' +
-            ", languageCode=" + languageCode +
+            ", languageCode='" + languageCode + '\'' +
             '}';
     }
 }

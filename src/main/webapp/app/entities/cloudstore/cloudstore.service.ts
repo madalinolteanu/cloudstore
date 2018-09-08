@@ -27,16 +27,17 @@ export class CloudStoreService {
 
     upload(fileToUpload: File) {
         const userFile = this.uploadFile(fileToUpload);
-        // const token = this.$localStorage.retrieve('token');
-        // const formData: FormData = new FormData();
-        // formData.append('fileKey', fileToUpload, fileToUpload.name);
-        // this.http
-        //     .post(this.resourceUrl + '/upload?token=' + token + '&directoryId=' + userFile.directoryId + '&fileId=' + userFile.id, formData)
-        //     .subscribe((data: CloudStore) => {
-        //         if (data.successMessage != null) {
-        //             return data.successMessage;
-        //         } else return null;
-        //     });
+        const token = this.$localStorage.retrieve('token');
+        const formData: FormData = new FormData();
+        formData.append('fileKey', fileToUpload, fileToUpload.name);
+        const url = this.$localStorage.retrieve("currentUrl");
+        this.http
+            .post(this.resourceUrl + '/upload?token=' + token + '&url=' + url, formData)
+            .subscribe((data: CloudStore) => {
+                if (data.successMessage != null) {
+                    return data.successMessage;
+                } else return null;
+            });
     }
 
     uploadFile(fileToUpload: File): any {
@@ -46,7 +47,7 @@ export class CloudStoreService {
         const userFile = new UserFile();
         userFile.fileName = fileToUpload.name;
         userFile.fileType = fileToUpload.type;
-        userFile.fileUrl = '/';
+        userFile.fileUrl = this.$localStorage.retrieve('currentUrl');
         return this.http.post(this.resourceUrl + '/file/upload?token=' + token, userFile).subscribe((data: CloudStore) => {
             if (data.successMessage != null) {
                 return data.files[0];
@@ -57,8 +58,8 @@ export class CloudStoreService {
     addFolder(addFolder: string): any {
         const newFolder = new Directory();
         newFolder.directoryName = addFolder;
-        newFolder.directoryUrl = './' + this.$localStorage.retrieve("currentDirId");
-        newFolder.directoryParent = this.$localStorage.retrieve("currentDirId");
+        newFolder.directoryParent = this.$localStorage.retrieve('currentDirId');
+        newFolder.directoryUrl = this.$localStorage.retrieve('currentUrl');
         const token = this.$localStorage.retrieve('token');
         return this.http.post(this.resourceUrl + '/directory/create?token=' + token, newFolder);
     }

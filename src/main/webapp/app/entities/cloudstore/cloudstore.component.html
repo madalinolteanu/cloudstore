@@ -49,7 +49,8 @@
                         <td class="cloud-td-th"  (click)="openFolder(elem.id, elem.fileName)">
                             <p>
                                 <a href="javascript:void(0)">
-                                    <span class="glyphicon glyphicon-folder-open"></span>
+                                    <span [hidden]="elem.fileType != 'folder'" class="glyphicon glyphicon-folder-open"></span>
+                                    <a [hidden]="elem.fileType == 'folder'" class="link-icon"></a>
                                     <span>{{elem.fileName}}</span>
                                 </a>
                             </p>

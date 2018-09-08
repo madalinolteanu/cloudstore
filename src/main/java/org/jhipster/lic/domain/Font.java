@@ -15,19 +15,19 @@ public class Font implements Serializable {
     @Id
     @Column(name = "FONT_ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer fontId;
+    private Long fontId;
 
     @Column(name = "FONT_NAME")
     private String fontName;
 
     @Column(name = "FONT_CODE")
-    private Integer fontCode;
+    private String fontCode;
 
-    public Integer getFontId() {
+    public Long getFontId() {
         return fontId;
     }
 
-    public void setFontId(Integer fontId) {
+    public void setFontId(Long fontId) {
         this.fontId = fontId;
     }
 
@@ -39,11 +39,11 @@ public class Font implements Serializable {
         this.fontName = fontName;
     }
 
-    public Integer getFontCode() {
+    public String getFontCode() {
         return fontCode;
     }
 
-    public void setFontCode(Integer fontCode) {
+    public void setFontCode(String fontCode) {
         this.fontCode = fontCode;
     }
 

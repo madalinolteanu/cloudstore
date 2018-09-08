@@ -19,6 +19,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import static org.jhipster.lic.config.Constants.UPLOAD_PATH;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
+
 /**
  * REST controller for managing users.
  * <p>
@@ -53,29 +56,52 @@ public class CloudStoreController {
 
     private final CloudStoreService cloudStoreService;
 
-    public CloudStoreController(UserService userService, CloudStoreService cloudStoreService) {
+    private final HttpServletRequest request;
+
+    public CloudStoreController(UserService userService, CloudStoreService cloudStoreService, HttpServletRequest request) {
 
         this.userService = userService;
         this.cloudStoreService = cloudStoreService;
+        this.request = request;
     }
 
     @PostMapping("/file/upload")
     @Timed
-    public void uploadFile(@RequestParam(value = "token") String token, @Valid @RequestBody FileDTO fileDTO){
+    public CloudStoreDTO uploadFile(@RequestParam(value = "token") String token, @Valid @RequestBody FileDTO fileDTO){
         UserDTO userDTO = userService.getUserByToken(token);
+        CloudStoreDTO response = new CloudStoreDTO();
         if(userDTO != null){
             fileDTO.setUserCode(userService.getUserCodeByToken(token));
             cloudStoreService.uploadFile(fileDTO);
+            response.setErrorMessage("File Uploaded Successfully!");
+            response.setErrorCode(200);
+        } else {
+            response.setErrorMessage("Can not upload file");
+            response.setErrorCode(500);
         }
+
+        return response;
     }
 
-    @RequestMapping(value = "/upload", method = RequestMethod.POST)
+    @RequestMapping(value = "/upload", method = POST, consumes = "multipart/form-data")
     public String uploadingPost(@RequestParam(value = "token") String token,
-                                @RequestParam(value = "directoryId") Integer directoryId,
-                                @RequestParam(value = "fileId") Integer fileId,
-                                @RequestParam("uploadingFiles") MultipartFile uploadedFile) throws IOException {
-            File file = new File(uploadedFile.getOriginalFilename());
-        return "redirect:/";
+                                @RequestParam(value = "url") String url,
+                                @RequestParam(value = "fileKey") MultipartFile uploadedFile) throws IOException {
+        if (uploadedFile != null && !uploadedFile.isEmpty()) {
+            UserDTO userDTO = userService.getUserByToken(token);
+            if(userDTO != null) {
+                String uploadsDir = UPLOAD_PATH;
+                String realPathToUploads = request.getServletContext().getRealPath(uploadsDir);
+                if (!new File(uploadsDir).exists()) {
+                    new File(uploadsDir).mkdir();
+                }
+                return  cloudStoreService.createFileToPath(realPathToUploads, uploadedFile, userDTO, url);
+            } else {
+                return "USER NOT FOUND!";
+            }
+        }
+
+        return "USER NOT FOUND!";
     }
 
     /**
@@ -114,9 +140,10 @@ public class CloudStoreController {
         CloudStoreDTO response = new CloudStoreDTO();
         UserDTO userDTO = userService.getUserByToken(token);
         if(userDTO != null){
-            if(directoryId.equals(-1))
+            if(directoryId == (long)-1)
                 directoryId = null;
-            List<FileDTO> files = cloudStoreService.getFiles(userDTO, directoryId);
+            String path = request.getServletContext().getRealPath(UPLOAD_PATH);
+            List<FileDTO> files = cloudStoreService.getFiles(userDTO, directoryId, path);
             response.setFiles(files);
             response.setSuccessMessage("Files Found!");
             response.setErrorCode(200);
@@ -130,14 +157,24 @@ public class CloudStoreController {
         CloudStoreDTO response = new CloudStoreDTO();
         UserDTO userDTO = userService.getUserByToken(token);
         if(userDTO != null){
-            directoryDTO.setUserCode(userService.getUserCodeByToken(token));
-            if(directoryDTO.getDirectoryParent() == -1)
-                directoryDTO.setDirectoryParent(null);
-            if(cloudStoreService.createDirectory(directoryDTO)){
-                response.setSuccessMessage("SUCCESS");
-                response.setSuccessCode(200);
+            if(cloudStoreService.canCreateDir(directoryDTO.getDirectoryName(), directoryDTO.getDirectoryParent())){
+                directoryDTO.setUserCode(userService.getUserCodeByToken(token));
+                if(directoryDTO.getDirectoryParent() == -1)
+                    directoryDTO.setDirectoryParent(null);
+                String uploadsDir = UPLOAD_PATH;
+                String realPathToUploads = request.getServletContext().getRealPath(UPLOAD_PATH);
+                if (!new File(uploadsDir).exists()) {
+                    new File(uploadsDir).mkdir();
+                }
+                if(cloudStoreService.createDirectory(realPathToUploads, directoryDTO)){
+                    response.setSuccessMessage("SUCCESS");
+                    response.setSuccessCode(200);
+                } else {
+                    response.setErrorMessage("Error!! Add folder action failed!");
+                    response.setErrorCode(500);
+                }
             } else {
-                response.setErrorMessage("Error!! Add folder action failed!");
+                response.setErrorMessage("Folder Name already exist!!");
                 response.setErrorCode(500);
             }
         } else {

@@ -21,7 +21,7 @@ public class UserDTO {
     @Size(max = 256)
     private String token;
 
-    @Size(max = 128)
+    @Size(max = 256)
     private String userCode;
 
     @Size(max = 128)
@@ -69,7 +69,7 @@ public class UserDTO {
     public UserDTO(User user) {
         this.id = user.getId();
         this.token = user.getToken();
-        this.userCode = null;
+        this.userCode = user.getUserCode();
         this.userType = null;
         this.username = null;
         this.password = null;

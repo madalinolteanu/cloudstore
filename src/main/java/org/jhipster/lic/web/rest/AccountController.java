@@ -6,9 +6,11 @@ import org.jhipster.lic.domain.CloudStore;
 import org.jhipster.lic.domain.User;
 import org.jhipster.lic.repository.UserRepository;
 import org.jhipster.lic.security.SecurityUtils;
+import org.jhipster.lic.service.CloudStoreService;
 import org.jhipster.lic.service.MailService;
 import org.jhipster.lic.service.UserService;
 import org.jhipster.lic.service.dto.CloudStoreDTO;
+import org.jhipster.lic.service.dto.DirectoryDTO;
 import org.jhipster.lic.service.dto.UserDTO;
 import org.jhipster.lic.web.rest.errors.*;
 import org.jhipster.lic.web.rest.vm.ManagedUserVM;
@@ -20,9 +22,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.security.auth.login.FailedLoginException;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.jhipster.lic.service.dto.PasswordChangeDTO;
+
+import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.util.*;
+
+import static org.jhipster.lic.config.Constants.UPLOAD_PATH;
 
 /**
  * REST controller for managing the current user's account.
@@ -37,10 +46,18 @@ public class AccountController {
 
     private final MailService mailService;
 
-    public AccountController(UserService userService, MailService mailService) {
+    private final CloudStoreService cloudStoreService;
+
+    private final HttpServletRequest request;
+
+
+    public AccountController(UserService userService, MailService mailService,
+                             CloudStoreService cloudStoreService, HttpServletRequest request) {
 
         this.userService = userService;
         this.mailService = mailService;
+        this.cloudStoreService = cloudStoreService;
+        this.request = request;
     }
 
     /**
@@ -56,16 +73,35 @@ public class AccountController {
     @ResponseStatus(HttpStatus.CREATED)
     public CloudStoreDTO registerAccount(@Valid @RequestBody UserDTO userDTO) {
         CloudStoreDTO response = new CloudStoreDTO();
+        String originalString = userDTO.hashCode() + "";
+        UserDTO user;
+        byte[] encodedhash;
+
         if (!checkPasswordLength(userDTO.getPassword())) {
             throw new InvalidPasswordException();
         }
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            encodedhash = digest.digest(
+                originalString.getBytes(StandardCharsets.UTF_8));
+            user = userService.findOneByUserCode(encodedhash);
+        } catch (Exception e){
+            response.setErrorMessage("Error generating SHA");
+            response.setErrorCode(200);
+            return response;
+        }
 
-        UserDTO user = userService.findOneByUserCode(userDTO.hashCode());
         if(user != null) {
             throw new LoginAlreadyUsedException();
         } else {
-            user = userService.createUser(userDTO);
+            user = userService.createUser(userDTO, encodedhash);
             mailService.sendActivationEmail(user);
+            String uploadsDir = UPLOAD_PATH;
+            String realPathToUploads = request.getServletContext().getRealPath(uploadsDir);
+            if (!new File(uploadsDir).exists()) {
+                new File(uploadsDir).mkdir();
+            }
+            cloudStoreService.createUserDir(realPathToUploads, user.getUserCode());
             response.setSuccessMessage("User successfully added!");
             response.setSuccessCode(200);
             response.setUserDTO(user);

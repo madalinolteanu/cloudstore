@@ -14,19 +14,19 @@ public class Theme implements Serializable {
     @Id
     @Column(name = "THEME_ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @Column(name = "THEME_NAME")
     private String themeName;
 
     @Column(name = "THEME_CODE")
-    private Integer themeCode;
+    private String themeCode;
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -38,11 +38,11 @@ public class Theme implements Serializable {
         this.themeName = themeName;
     }
 
-    public Integer getThemeCode() {
+    public String getThemeCode() {
         return themeCode;
     }
 
-    public void setThemeCode(Integer themeCode) {
+    public void setThemeCode(String themeCode) {
         this.themeCode = themeCode;
     }
 

@@ -24,7 +24,7 @@ export class CloudStoreComponent implements OnInit {
     fileToUpload: File;
     currentDirId: number;
     crumbData: any;
-    currentPath: '.';
+    currentPath: any;
     canMoveButton: boolean;
     canMoveMessage: boolean;
     whereToMoveMessage: boolean;
@@ -167,17 +167,28 @@ export class CloudStoreComponent implements OnInit {
     clearBreadCrumb(id: any) {
         let canDelete = false;
         let length = this.crumbData.length;
+        this.currentPath = '/';
         for(let i = 0; i < this.crumbData.length; i++){
             if(canDelete){
                 delete this.crumbData[i];
                 length--;
             }
             if(this.crumbData[i] != undefined){
-                if(this.crumbData[i].id == id || canDelete)
+                if(this.crumbData[i].id == id || canDelete){
                     canDelete = true;
+                }
             }
         }
         this.crumbData.length = length;
+        if(length == 1)
+            this.currentPath = "/";
+        else {
+            for(let i = 0; i < this.crumbData.length; i++) {
+                if(i > 0)
+                    this.currentPath = this.currentPath + this.crumbData[i].name + "/";
+            }
+        }
+        this.$localStorage.store("currentUrl", this.currentPath);
     }
 
     cancelMove() {

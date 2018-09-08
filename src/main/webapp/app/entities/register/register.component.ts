@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { JhiLanguageService } from 'ng-jhipster';
+import {JhiEventManager, JhiLanguageService} from 'ng-jhipster';
 import { AccountService } from '../account/account.service';
 import { Router } from '@angular/router';
 import {Account} from "../account/account.model";
 import {CloudStore} from "../cloudstore/cloudstore.model";
+import {LoginService} from "../../core/login/login.service";
 
 @Component({
     selector: 'jhi-register',
@@ -20,7 +21,11 @@ export class RegisterComponent implements OnInit {
     imageUploaded: boolean;
     imageToUpload;
 
-    constructor(private languageService: JhiLanguageService, private accountService: AccountService, private router: Router) {}
+    constructor(private languageService: JhiLanguageService,
+                private accountService: AccountService,
+                private systemService: LoginService,
+                private eventManager: JhiEventManager,
+                private router: Router) {}
 
     ngOnInit() {
         this.imageURL = "";
@@ -28,6 +33,7 @@ export class RegisterComponent implements OnInit {
         this.isVisible = true;
         this.displayGlyph = true;
         this.registerAccount = {};
+        this.systemLogin();
     }
 
     register() {
@@ -39,7 +45,6 @@ export class RegisterComponent implements OnInit {
         account.lastName = this.registerAccount.lastName;
         account.imageUrl = 'test';
         account.userType = 'BASIC';
-        debugger;
         this.accountService.register(account).subscribe((data: CloudStore) => {
             if(data.successCode == 200 ){
                 this.isVisible = false;
@@ -63,5 +68,23 @@ export class RegisterComponent implements OnInit {
         };
         if (files != null) this.imageToUpload = files.item(0);
         // this.uploadFileToActivity();
+    }
+
+    systemLogin() {
+        this.systemService
+            .login({
+                username: 'user',
+                password: 'user',
+                rememberMe: true
+            })
+            .then(() => {
+                this.eventManager.broadcast({
+                    name: 'authenticationSuccess',
+                    content: 'Sending Authentication Success'
+                });
+            })
+            .catch(() => {
+                console.log('authenticationError');
+            });
     }
 }
