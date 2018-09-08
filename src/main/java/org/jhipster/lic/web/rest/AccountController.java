@@ -67,7 +67,7 @@ public class AccountController {
             user = userService.createUser(userDTO);
             mailService.sendActivationEmail(user);
             response.setSuccessMessage("User successfully added!");
-            response.setErrorCode(200);
+            response.setSuccessCode(200);
             response.setUserDTO(user);
         }
 

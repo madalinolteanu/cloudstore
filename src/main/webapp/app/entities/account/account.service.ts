@@ -38,6 +38,7 @@ export class AccountService {
             if (data.successMessage != null) {
                 localStorage.store('isLogged', true);
                 localStorage.store('token', data.userDTO.token);
+                this.$localStorage.store('currentDirId', -1);
                 router.navigate([this.dashboardUrl]);
             } else return null;
         });
@@ -48,23 +49,12 @@ export class AccountService {
         this.http.post(this.resourceUrl + '/logout', token).subscribe((data: CloudStore) => {
             console.log('logged out');
         });
-        this.$localStorage.store('isLogged', false);
-        this.$localStorage.store('token', '');
+        this.$localStorage.clear();
         this.router.navigate([this.loginUrl]);
     }
 
-    register(register: any) {
-        const account = new Account();
-        account.username = register.username;
-        account.password = register.password;
-        account.email = register.email;
-        account.firstName = 'test';
-        account.lastName = 'test';
-        account.imageUrl = 'test';
-        account.userType = 'BASIC';
-        return this.http.post(this.resourceUrl + '/register', account).subscribe((data: CloudStore) => {
-            console.log(data);
-        });
+    register(account): any {
+        return this.http.post(this.resourceUrl + '/register', account);
     }
 
     create(account: Account): Observable<HttpResponse<Account>> {

@@ -15,14 +15,14 @@ export class CloudStoreService {
 
     constructor(private http: HttpClient, private router: Router, private $localStorage: LocalStorageService) {}
 
-    getFolders(): any {
+    getFolders(parentId: any): any {
         const token = this.$localStorage.retrieve('token');
-        return this.http.get(this.resourceUrl + '/directories' + '?token=' + token + '&directoryId=-1');
+        return this.http.get(this.resourceUrl + '/directories' + '?token=' + token + '&directoryId=' + parentId);
     }
 
-    getFiles(): any {
+    getFiles(parentId): any {
         const token = this.$localStorage.retrieve('token');
-        return this.http.get(this.resourceUrl + '/files' + '?token=' + token + '&directoryId=-1');
+        return this.http.get(this.resourceUrl + '/files' + '?token=' + token + '&directoryId=' + parentId);
     }
 
     upload(fileToUpload: File) {
@@ -57,20 +57,26 @@ export class CloudStoreService {
     addFolder(addFolder: string): any {
         const newFolder = new Directory();
         newFolder.directoryName = addFolder;
-        newFolder.directoryUrl = ".";
-        newFolder.directoryParent = -1;
+        newFolder.directoryUrl = './' + this.$localStorage.retrieve("currentDirId");
+        newFolder.directoryParent = this.$localStorage.retrieve("currentDirId");
         const token = this.$localStorage.retrieve('token');
         return this.http.post(this.resourceUrl + '/directory/create?token=' + token, newFolder);
     }
 
     deleteFile(): any {
         const selectedFile = this.$localStorage.retrieve('selectedFile');
-        const array = selectedFile.split("-");
+        const array = selectedFile.split("+");
         const token = this.$localStorage.retrieve('token');
         if(array[0] == this.folderType){
             return this.http.post(this.resourceUrl + '/directory/delete?token=' + token, array[1]);
         } else {
             return this.http.post(this.resourceUrl + '/file/delete?token=' + token, array[1]);
         }
+    }
+
+    moveFiles(filesToMove: any, parentId: any): any {
+        const token = this.$localStorage.retrieve('token');
+        return this.http.post(this.resourceUrl + '/directory/move?token=' + token +
+            '&directoryId=' + parentId, filesToMove);
     }
 }

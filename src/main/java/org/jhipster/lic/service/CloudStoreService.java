@@ -20,10 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Service class for managing DataBlocs.
@@ -94,8 +91,27 @@ public class CloudStoreService {
     public boolean deleteDirectory(UserDTO userDTO, Long directoryId){
         User user = userRepository.findOneByToken(userDTO.getToken());
         Directory directory = directoryRepository.findByIdAndUserCode(directoryId, user.getUserCode());
+        Queue<Long> queue = new PriorityQueue<>();
+        Long current;
+        queue.add(directoryId);
+        while(true){
+            current = queue.peek();
+            List<Directory> directories = directoryRepository.findByDirectoryParentAndUserCode(current, user.getUserCode());
+            for(Directory elem : directories) {
+                if(directoryRepository.findByDirectoryParentAndUserCode(elem.getId(), user.getUserCode()).size() == 0){
+                    directoryRepository.delete(elem);
+                    deleteStoredDirectory(elem.getDirectoryUrl(), elem.getDirectoryName());
+                } else {
+                    queue.add(elem.getId());
+                }
+            }
+            queue.remove(current);
+            if(queue.size() == 0)
+                break;
+        }
         directoryRepository.delete(directory);
-        return deleteStoredDirectory(directory.getDirectoryUrl(), directory.getDirectoryName());
+        deleteStoredDirectory(directory.getDirectoryUrl(), directory.getDirectoryName());
+        return true;
     }
 
     public boolean deleteFile(UserDTO userDTO, Long fileId){
@@ -134,6 +150,22 @@ public class CloudStoreService {
     }
 
     private boolean deleteStoredDirectory(String url, String name){
+
+        return true;
+    }
+
+    public boolean moveDirectories(UserDTO userDTO, String[] idList, String parentId){
+        User user = userRepository.findOneByToken(userDTO.getToken());
+        for(String elem : idList) {
+            Directory directory = directoryRepository.findByIdAndUserCode(Long.parseLong(elem), user.getUserCode());
+            if(parentId != null)
+                directory.setDirectoryParent(Long.parseLong(parentId));
+            else {
+                directory.setDirectoryParent(null);
+            }
+            directoryRepository.save(directory);
+            deleteStoredDirectory(directory.getDirectoryUrl(), directory.getDirectoryName());
+        }
 
         return true;
     }

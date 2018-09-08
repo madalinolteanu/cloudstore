@@ -59,10 +59,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         }
     }
 
-    @Bean
-    public Http401UnauthorizedEntryPoint http401UnauthorizedEntryPoint() {
-        return new Http401UnauthorizedEntryPoint();
-    }
+//    @Bean
+//    public Http401UnauthorizedEntryPoint http401UnauthorizedEntryPoint() {
+//        return new Http401UnauthorizedEntryPoint();
+//    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {

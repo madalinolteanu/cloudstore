@@ -14,9 +14,11 @@ public interface DirectoryRepository extends JpaRepository<Directory, Long> {
 
     List<Directory> findAllByUserCode(String userCode);
 
-    List<Directory> findAllByUserCodeAndDirectoryParent(String userCode, Long directoryParent);
-
     Directory findByIdAndUserCode(Long id, String userCode);
+
+    List<Directory> findAllByUserCodeAndDirectoryParent(String userCode, Long parentId);
+
+    List<Directory> findByDirectoryParentAndUserCode(Long parent, String userCode);
 
     boolean deleteByUserCodeAndId(String userCode, Long id);
 }

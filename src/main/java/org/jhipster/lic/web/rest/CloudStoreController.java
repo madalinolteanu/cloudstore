@@ -187,4 +187,27 @@ public class CloudStoreController {
         return response;
     }
 
+    @PostMapping("/directory/move")
+    @Timed
+    public CloudStoreDTO moveDirectories(@RequestParam(value = "token") String token,
+                                         @RequestParam(value = "directoryId") String parentId,
+                                         @Valid @RequestBody String[] idList){
+        CloudStoreDTO response = new CloudStoreDTO();
+        UserDTO userDTO = userService.getUserByToken(token);
+        if(userDTO != null){
+            if(parentId.equals(-1 + ""))
+                parentId = null;
+            if(cloudStoreService.moveDirectories(userDTO, idList, parentId)){
+                response.setSuccessMessage("SUCCESS");
+                response.setSuccessCode(200);
+            } else {
+                response.setErrorMessage("Error!! Delete folder action failed!");
+                response.setErrorCode(500);
+            }
+        } else {
+            response.setErrorMessage("Error!! User not found!");
+            response.setErrorCode(500);
+        }
+        return response;
+    }
 }

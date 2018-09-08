@@ -2,10 +2,10 @@
  * Created by Madalin on 9/7/2018.
  */
 import { Component, OnInit } from '@angular/core';
-import {NgbActiveModal, NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {CloudStoreService} from "../../../entities/cloudstore/cloudstore.service";
-import {CloudStore} from "../../../entities/cloudstore/cloudstore.model";
-import {Router} from "@angular/router";
+import {NgbActiveModal, NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {CloudStoreService} from '../../../entities/cloudstore/cloudstore.service';
+import {CloudStore} from '../../../entities/cloudstore/cloudstore.model';
+import {Router} from '@angular/router';
 
 @Component({
     selector: 'jhi-share-modal',

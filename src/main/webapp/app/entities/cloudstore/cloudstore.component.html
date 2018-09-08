@@ -8,10 +8,10 @@
     <div class="filesCard">
         <div id="breadcrumb" class="cloud-breadcrumb">
             <ul>
-                <li><a href="#">CloudStore</a></li>
-                <li><a href="#">Dir1</a></li>
-                <li><a href="#">Dir2 15</a></li>
-                <li><span>Dir3</span></li>
+                <li *ngFor="let crumb of crumbData; let j = index" id="{{crumb.id}}">
+                    <a href="javascript:void(0)" (click)="openFolder('folder+' + crumb.id, crumb.name)">{{crumb.name}}</a>
+                </li>
+
             </ul>
         </div>
         <div class="table-wrapper">
@@ -46,7 +46,7 @@
                                 <span class="cloud-checkmark"></span>
                             </label>
                         </td>
-                        <td class="cloud-td-th"  (click)="openFolder()">
+                        <td class="cloud-td-th"  (click)="openFolder(elem.id, elem.fileName)">
                             <p>
                                 <a href="javascript:void(0)">
                                     <span class="glyphicon glyphicon-folder-open"></span>
@@ -75,11 +75,6 @@
 
                         </td>
                     </tr>
-                    <tr>
-
-                    </tr>
-                    <tr>
-                    </tr>
                     </tbody>
                 </table>
             </div>
@@ -93,6 +88,27 @@
         <div class="btn-wrapper">
             <label for="openNewFolder" class="cloud-btn">Add Folder</label>
             <input type="button" id="openNewFolder" (click)="openFolderModal()">
+        </div>
+        <div [hidden]="!canMoveMessage" class="green-message">
+            <p><h3>Please, Select</h3><p>
+            <p><h3>the Folder</h3><p>
+            <p><h3>where to Move</h3></p>
+            <p><h3>the Selected File</h3></p>
+            <div class="btn-wrapper">
+                <label for="cancelMoveTo" class="cloud-btn">Cancel Move</label>
+                <input type="button" id="cancelMoveTo" (click)="cancelMove()">
+            </div>
+        </div>
+        <div [hidden]="!whereToMoveMessage" class="green-message">
+            <p><h3>Move Here</h3></p>
+            <div class="btn-wrapper">
+                <label for="moveHere" class="cloud-btn">Move Here</label>
+                <input type="button" id="moveHere" (click)="moveHere()">
+            </div>
+            <div class="btn-wrapper">
+                <label for="cancelMoveHere" class="cloud-btn">Cancel Move</label>
+                <input type="button" id="cancelMoveHere" (click)="cancelMove()">
+            </div>
         </div>
     </div>
 </div>

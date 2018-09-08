@@ -1,5 +1,5 @@
-<div style="width: 50%; float: left">
-
+<div style="width: 50%; float: left; position: fixed;">
+    <img src="/content/images/login-background.jpg">
 </div>
 <div style="width: 50%; float: right; padding: 2%">
     <div class="modal-header">
@@ -35,10 +35,47 @@
             </div>
         </div>
         <div class="row justify-content-center">
-            <div class="col-md-8">
+            <div class="col-md-8" style="margin-top: 5%;margin-bottom: 10%;" *ngIf="isVisible">
                 <form name="form" role="form" (ngSubmit)="register()" #registerForm="ngForm" *ngIf="!success">
                     <div class="form-group">
-                        <label class="form-control-label" for="login">Username</label>
+                        <input type="text" class="form-control" [(ngModel)]="registerAccount.firstName" id="firstName"
+                               name="firstName" #firstName="ngModel" placeholder="First Name"
+                               required minlength="1" maxlength="128" pattern="^[_.@A-Za-z0-9-]*$">
+                        <div *ngIf="firstName.dirty && firstName.invalid">
+                            <small class="form-text text-danger">
+                                First Name is required.
+                            </small>
+                            <small class="form-text text-danger">
+                                First Name is required to be at least 1 character.
+                            </small>
+                            <small class="form-text text-danger">
+                                First Name cannot be longer than 50 characters.
+                            </small>
+                            <small class="form-text text-danger">
+                                First Name can only contain letters and digits.
+                            </small>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" [(ngModel)]="registerAccount.lastName" id="lastName"
+                               name="lastName" #lastName="ngModel" placeholder="Last Name"
+                               required minlength="1" maxlength="128" pattern="^[_.@A-Za-z0-9-]*$">
+                        <div *ngIf="lastName.dirty && lastName.invalid">
+                            <small class="form-text text-danger">
+                                Last Name is required.
+                            </small>
+                            <small class="form-text text-danger">
+                                Last Name is required to be at least 1 character.
+                            </small>
+                            <small class="form-text text-danger">
+                                Last Name cannot be longer than 50 characters.
+                            </small>
+                            <small class="form-text text-danger">
+                                Last Name can only contain letters and digits.
+                            </small>
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <input type="text" class="form-control" [(ngModel)]="registerAccount.username" id="login"
                                name="login" #login="ngModel" placeholder="Username"
                                required minlength="1" maxlength="50" pattern="^[_.@A-Za-z0-9-]*$">
@@ -58,7 +95,6 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="form-control-label" for="email">Email</label>
                         <input type="email" class="form-control" id="email" name="email" #email="ngModel"
                                placeholder="Email"
                                [(ngModel)]="registerAccount.email" minlength=5 maxlength=254 email required>
@@ -78,7 +114,6 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="form-control-label" for="password">New password</label>
                         <input type="password" class="form-control" id="password" name="password" #password="ngModel"
                                placeholder="Password"
                                [(ngModel)]="registerAccount.password" minlength=8 maxlength=128 required>
@@ -97,7 +132,6 @@
                             [passwordToCheck]="registerAccount.password"></jhi-password-strength-bar>
                     </div>
                     <div class="form-group">
-                        <label class="form-control-label" for="confirmPassword">New password confirmation</label>
                         <input type="password" class="form-control" id="confirmPassword" name="confirmPassword"
                                #confirmPasswordInput="ngModel" placeholder="New Password Confirmation"
                                [(ngModel)]="confirmPassword" minlength=8 maxlength=128 required>
@@ -113,10 +147,42 @@
                             </small>
                         </div>
                     </div>
+                    <div class="col-md-4 avatarWrapper" style="float: left" for="uploadPhoto">
+                        <form>
+                            <label for="uploadPhoto">
+                            <div class="avatar cursor-pointer" (mouseenter)="displayGlyph = false"
+                                 (mouseleave)="displayGlyph = true" >
+                                <div class="uploadOverlay">
+                                    <i id="uploadGlyph" class="glyphicon glyphicon-cloud-upload cloud-glyphicon"
+                                    style="background-color: rgba(173, 216, 230, 0.5);border-radius: 100%;height: 115px;
+                                        margin: 0;padding: 25px;width: 115px;
+                                    " [hidden]="displayGlyph"></i>
+                                </div>
+                                <img class="avatar-image" [hidden]="imageUploaded"
+                                     src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/20625/avatar-bg.png">
+                                <img class="avatar-image" [src]="imageURL" [hidden]="!imageUploaded"> <br/>
+                            </div>
+                            </label>
+                        </form>
+                        <input type="file" id="uploadPhoto" hidden accept="image/*"
+                               (change)="handleFileInput($event)">
 
-                    <button type="submit" [disabled]="registerForm.form.invalid" class="btn btn-primary">Register
-                    </button>
+                    </div>
+                    <div class="col-md-4" style="float: right; margin-top: 11%; margin-right: 15%">
+                        <button type="submit" [disabled]="registerForm.form.invalid" style="float:right"
+                                class="btn btn-primary">Register
+                        </button>
+                    </div>
                 </form>
+            </div>
+            <div class="col-md-8" style="margin-top: 5%" *ngIf="!isVisible">
+                <div class="col-md-8" id="RegisterSuccess">
+                    <strong> Register Success !!</strong>
+                    <div class="btn-wrapper">
+                        <label for="goToLogin" (click)="navigateLogin()" class="cloud-btn">Go to login..</label>
+                        <input type="button" id="goToLogin" class="form-control">
+                    </div>
+                </div>
             </div>
         </div>
     </div>
