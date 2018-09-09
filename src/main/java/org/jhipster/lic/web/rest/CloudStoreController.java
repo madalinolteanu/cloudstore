@@ -72,6 +72,8 @@ public class CloudStoreController {
         CloudStoreDTO response = new CloudStoreDTO();
         if(userDTO != null){
             fileDTO.setUserCode(userService.getUserCodeByToken(token));
+            if(fileDTO.getDirectoryId() == -1)
+                fileDTO.setDirectoryId(null);
             cloudStoreService.uploadFile(fileDTO);
             response.setErrorMessage("File Uploaded Successfully!");
             response.setErrorCode(200);
@@ -84,7 +86,7 @@ public class CloudStoreController {
     }
 
     @RequestMapping(value = "/upload", method = POST, consumes = "multipart/form-data")
-    public String uploadingPost(@RequestParam(value = "token") String token,
+    public void uploadingPost(@RequestParam(value = "token") String token,
                                 @RequestParam(value = "url") String url,
                                 @RequestParam(value = "fileKey") MultipartFile uploadedFile) throws IOException {
         if (uploadedFile != null && !uploadedFile.isEmpty()) {
@@ -95,13 +97,9 @@ public class CloudStoreController {
                 if (!new File(uploadsDir).exists()) {
                     new File(uploadsDir).mkdir();
                 }
-                return  cloudStoreService.createFileToPath(realPathToUploads, uploadedFile, userDTO, url);
-            } else {
-                return "USER NOT FOUND!";
+                cloudStoreService.createFileToPath(realPathToUploads, uploadedFile, userDTO, url);
             }
         }
-
-        return "USER NOT FOUND!";
     }
 
     /**

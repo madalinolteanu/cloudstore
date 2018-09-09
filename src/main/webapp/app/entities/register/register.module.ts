@@ -1,4 +1,4 @@
-import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
+import {CUSTOM_ELEMENTS_SCHEMA, NgModule, NO_ERRORS_SCHEMA} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RegisterComponent } from './register.component';
 import { FormsModule } from '@angular/forms';
@@ -13,6 +13,6 @@ const ENTITY_STATES = [...registerRoute];
     declarations: [RegisterComponent],
     entryComponents: [RegisterComponent],
     providers: [RegisterComponent],
-    schemas: [CUSTOM_ELEMENTS_SCHEMA]
+    schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA]
 })
 export class RegisterModule {}

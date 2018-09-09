@@ -4,6 +4,7 @@ import org.jhipster.lic.config.Constants;
 
 import org.jhipster.lic.domain.Settings;
 import org.jhipster.lic.domain.User;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -30,10 +31,13 @@ public class UserDTO {
     @Size(max = 128)
     private String username;
 
-    @NotBlank
     @Pattern(regexp = Constants.LOGIN_REGEX)
     @Size(min = 8, max = 128)
     private String password;
+
+    @Pattern(regexp = Constants.LOGIN_REGEX)
+    @Size(min = 8, max = 128)
+    private String oldPassword;
 
     @Size(max = 128)
     private String firstName;
@@ -60,7 +64,9 @@ public class UserDTO {
     @Size(max = 128)
     private String resetKey;
 
-    private Settings settings;
+    private SettingsDTO settings;
+
+    private MultipartFile avatar;
 
     public UserDTO() {
         // Empty constructor needed for Jackson.
@@ -205,14 +211,29 @@ public class UserDTO {
         this.resetKey = resetKey;
     }
 
-    public Settings getSettings() {
+    public SettingsDTO getSettings() {
         return settings;
     }
 
-    public void setSettings(Settings settings) {
+    public void setSettings(SettingsDTO settings) {
         this.settings = settings;
     }
 
+    public MultipartFile getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(MultipartFile avatar) {
+        this.avatar = avatar;
+    }
+
+    public String getOldPassword() {
+        return oldPassword;
+    }
+
+    public void setOldPassword(String oldPassword) {
+        this.oldPassword = oldPassword;
+    }
 
     @Override
     public boolean equals(Object o) {

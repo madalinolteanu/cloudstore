@@ -19,6 +19,10 @@ public class CreateFiles {
         try {
             String orgName = uploadedFile.getOriginalFilename();
             String filePath = path + orgName;
+            File old = new File(filePath);
+            if(old.exists()){
+                old.delete();
+            }
             File dest = new File(filePath);
             uploadedFile.transferTo(dest);
             return "SUCCESS";

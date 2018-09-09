@@ -20,6 +20,7 @@ export class RegisterComponent implements OnInit {
     imageURL: string;
     imageUploaded: boolean;
     imageToUpload;
+    isEmailExist: boolean;
 
     constructor(private languageService: JhiLanguageService,
                 private accountService: AccountService,
@@ -33,6 +34,7 @@ export class RegisterComponent implements OnInit {
         this.isVisible = true;
         this.displayGlyph = true;
         this.registerAccount = {};
+        this.isEmailExist = false;
         this.systemLogin();
     }
 
@@ -45,9 +47,21 @@ export class RegisterComponent implements OnInit {
         account.lastName = this.registerAccount.lastName;
         account.imageUrl = 'test';
         account.userType = 'BASIC';
+        const $accountService = this.accountService;
+        let avatar = this.imageToUpload;
+        let isVisible = this.isVisible;
         this.accountService.register(account).subscribe((data: CloudStore) => {
             if(data.successCode == 200 ){
-                this.isVisible = false;
+                const formData: FormData = new FormData();
+                formData.append('fileKey', avatar, data.userDTO.userCode);
+                formData.set("name", data.userDTO.userCode, avatar.name);
+                $accountService.uploadAvatar(formData).subscribe((upload: CloudStore) => {
+                    if(upload.successCode == 200) {
+                        isVisible = true;
+                    }
+                });
+            } else {
+                this.isEmailExist = true;
             }
         });
     }
@@ -62,12 +76,13 @@ export class RegisterComponent implements OnInit {
 
         reader.readAsDataURL(event.target.files[0]); // read file as data url
 
-        reader.onload = (event: any) => { // called once readAsDataURL is completed
+        reader.onload = (event: any) => {
             this.imageURL = event.target.result;
             this.imageUploaded = true;
         };
-        if (files != null) this.imageToUpload = files.item(0);
-        // this.uploadFileToActivity();
+        if (files != null) {
+            this.imageToUpload = files.item(0);
+        }
     }
 
     systemLogin() {

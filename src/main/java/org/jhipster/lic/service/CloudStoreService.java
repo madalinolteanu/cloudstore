@@ -199,7 +199,7 @@ public class CloudStoreService {
         return directoryRepository.findByDirectoryNameAndDirectoryParent(name, parentId) == null;
     }
 
-    private MultipartFile getStoredFile(String path, String fileName){
+    public MultipartFile getStoredFile(String path, String fileName){
         CreateFiles createFiles = new CreateFiles();
         try {
             return createFiles.getFile(path, fileName);

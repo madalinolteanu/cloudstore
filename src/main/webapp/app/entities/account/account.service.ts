@@ -52,12 +52,15 @@ export class AccountService {
         return this.http.post<Account>(this.resourceUrl, account, { observe: 'response' });
     }
 
-    update(account: Account): Observable<HttpResponse<Account>> {
-        return this.http.put<Account>(this.resourceUrl, account, { observe: 'response' });
+    update(account: Account): any {
+        account.avatar = null;
+        const token = this.$localStorage.retrieve('token');
+        return this.http.post(this.resourceUrl + '/update?token=' + token, account);
     }
 
-    find(login: string): Observable<HttpResponse<Account>> {
-        return this.http.get<Account>(`${this.resourceUrl}/${login}`, { observe: 'response' });
+    find(): any {
+        const token = this.$localStorage.retrieve('token');
+        return this.http.get(`${this.resourceUrl}/get-account?token=`+ token, { observe: 'response' });
     }
 
     query(req?: any): Observable<HttpResponse<Account[]>> {
@@ -75,5 +78,9 @@ export class AccountService {
 
     isAuthenticated(): boolean {
         return this.$localStorage.retrieve('isLogged');
+    }
+
+    uploadAvatar(avatar: any): any {
+        return this.http.post(this.resourceUrl + '/register/upload-avatar', avatar);
     }
 }

@@ -31,13 +31,7 @@ export class CloudStoreService {
         const formData: FormData = new FormData();
         formData.append('fileKey', fileToUpload, fileToUpload.name);
         const url = this.$localStorage.retrieve("currentUrl");
-        this.http
-            .post(this.resourceUrl + '/upload?token=' + token + '&url=' + url, formData)
-            .subscribe((data: CloudStore) => {
-                if (data.successMessage != null) {
-                    return data.successMessage;
-                } else return null;
-            });
+        return this.http.post(this.resourceUrl + '/upload?token=' + token + '&url=' + url, formData)
     }
 
     uploadFile(fileToUpload: File): any {
@@ -48,6 +42,7 @@ export class CloudStoreService {
         userFile.fileName = fileToUpload.name;
         userFile.fileType = fileToUpload.type;
         userFile.fileUrl = this.$localStorage.retrieve('currentUrl');
+        userFile.directoryId = this.$localStorage.retrieve('currentDirId');
         return this.http.post(this.resourceUrl + '/file/upload?token=' + token, userFile).subscribe((data: CloudStore) => {
             if (data.successMessage != null) {
                 return data.files[0];

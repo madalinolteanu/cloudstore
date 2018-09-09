@@ -1,8 +1,10 @@
 package org.jhipster.lic.service;
 
+import org.jhipster.lic.domain.Settings;
 import org.jhipster.lic.domain.User;
 import org.jhipster.lic.repository.UserRepository;
 import org.jhipster.lic.security.jwt.TokenProvider;
+import org.jhipster.lic.service.dto.SettingsDTO;
 import org.jhipster.lic.service.util.RandomUtil;
 import org.jhipster.lic.service.dto.UserDTO;
 
@@ -16,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.jhipster.lic.web.rest.errors.InvalidPasswordException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.security.auth.login.FailedLoginException;
 import java.nio.charset.StandardCharsets;
@@ -116,13 +119,13 @@ public class UserService {
         User user = new User();
         UserDTO responeUser;
         user.setId(Long.parseLong(getNextUserId() + ""));
+        user.setUserCode(bytesToHex(encodedhash));
         user.setUserType(userDTO.getUserType());
         user.setFirstName(userDTO.getFirstName());
         user.setLastName(userDTO.getLastName());
         user.setEmail(userDTO.getEmail());
-        user.setImageUrl(userDTO.getImageUrl());
+        user.setImageUrl(userDTO.getImageUrl() + "/" + user.getUserCode() + "/" + user.getUserCode());
         user.setUsername(userDTO.getUsername());
-        user.setUserCode(bytesToHex(encodedhash));
         user.setActivationKey("12345");
         user.setCreationDate(Instant.now());
         String encryptedPassword = passwordEncoder.encode(userDTO.getPassword());
@@ -140,8 +143,13 @@ public class UserService {
 
     public UserDTO getUserByToken(String token){
         User user = userRepository.findOneByToken(token);
-        if(user != null)
-            return new UserDTO(user);
+        UserDTO responseUser;
+        if(user != null){
+            responseUser = new UserDTO(user);
+            SettingsDTO settingsDTO = settingsService.getSettingsByUserCode(responseUser);
+            responseUser.setSettings(settingsDTO);
+            return responseUser;
+        }
         return null;
     }
 
@@ -175,25 +183,34 @@ public class UserService {
      * @param userDTO user to update
      * @return updated user
      */
-    public Optional<UserDTO> updateUser(UserDTO userDTO) {
-//        return Optional.of(userRepository
-//            .findById(userDTO.getUserId()))
-//            .filter(Optional::isPresent)
-//            .map(Optional::get)
-//            .map(user -> {
-//                this.clearUserCaches(user);
-//                user.setUserCode(userDTO.getUserCode());
-//                user.setFirstName(userDTO.getFirstName());
-//                user.setLastName(userDTO.getLastName());
-//                user.setEmail(userDTO.getEmail());
-//                user.setImageUrl(userDTO.getImageUrl());
-//                user.setActive(userDTO.isActive());
-//                this.clearUserCaches(user);
-//                log.debug("Changed Information for User: {}", user);
-//                return user;
-//            })
-//            .map(UserDTO::new);
+    public Integer updateUser(UserDTO userDTO){
+        User user = userRepository.findOneByUserCode(userDTO.getUserCode());
+        if(userDTO.getUserType() != null)
+            user.setUserType(userDTO.getUserType());
+        if(userDTO.getFirstName() != null)
+            user.setFirstName(userDTO.getFirstName());
+        if(userDTO.getLastName() != null)
+            user.setLastName(userDTO.getLastName());
+        if(!userRepository.findOneByEmail(userDTO.getEmail()).getUserCode().equals(userDTO.getUserCode())){
+            return 501;
+        } else {
+            user.setEmail(userDTO.getEmail());
+        }
+        if(userDTO.getOldPassword() != null){
+            if(passwordEncoder.matches(userDTO.getOldPassword(),
+                userRepository.findOneByUserCode(userDTO.getUserCode()).getPassword()))
+                user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+            else {
+                return 502;
+            }
+        }
+        userRepository.save(user);
+        settingsService.updateSettingByUserCode(userDTO.getSettings(), userDTO);
         return null;
+    }
+
+    public UserDTO getUserByUserCode(String userCode){
+        return new UserDTO(userRepository.findOneByUserCode(userCode));
     }
 
     public void deleteUser(String userCode) {

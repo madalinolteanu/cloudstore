@@ -25,6 +25,7 @@ import javax.security.auth.login.FailedLoginException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.jhipster.lic.service.dto.PasswordChangeDTO;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -32,6 +33,7 @@ import java.security.MessageDigest;
 import java.util.*;
 
 import static org.jhipster.lic.config.Constants.UPLOAD_PATH;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 /**
  * REST controller for managing the current user's account.
@@ -94,12 +96,12 @@ public class AccountController {
         if(user != null) {
             throw new LoginAlreadyUsedException();
         } else {
+            String realPathToUploads = request.getServletContext().getRealPath(UPLOAD_PATH);
+            userDTO.setImageUrl(realPathToUploads);
             user = userService.createUser(userDTO, encodedhash);
             mailService.sendActivationEmail(user);
-            String uploadsDir = UPLOAD_PATH;
-            String realPathToUploads = request.getServletContext().getRealPath(uploadsDir);
-            if (!new File(uploadsDir).exists()) {
-                new File(uploadsDir).mkdir();
+            if (!new File(UPLOAD_PATH).exists()) {
+                new File(UPLOAD_PATH).mkdir();
             }
             cloudStoreService.createUserDir(realPathToUploads, user.getUserCode());
             response.setSuccessMessage("User successfully added!");
@@ -107,6 +109,19 @@ public class AccountController {
             response.setUserDTO(user);
         }
 
+        return response;
+    }
+
+    @RequestMapping(value = "/account/register/upload-avatar", method = POST, consumes = "multipart/form-data")
+    public CloudStoreDTO uploadAvatar(@RequestParam(value = "fileKey") MultipartFile uploadedFile) {
+        CloudStoreDTO response = new CloudStoreDTO();
+        if(uploadedFile != null){
+            UserDTO userDTO = userService.getUserByUserCode(uploadedFile.getOriginalFilename());
+            String realPathToUploads = request.getServletContext().getRealPath(UPLOAD_PATH);
+            cloudStoreService.createFileToPath(realPathToUploads, uploadedFile, userDTO, "/");
+            response.setSuccessMessage("SUCCESS");
+            response.setSuccessCode(200);
+        }
         return response;
     }
 
@@ -138,6 +153,10 @@ public class AccountController {
         try {
             UserDTO userDTO = userService.getByUsernameAndPassword(user);
             if( userDTO != null){
+                String realPathToUploads = request.getServletContext().getRealPath(UPLOAD_PATH);
+                MultipartFile multipartFile = cloudStoreService.getStoredFile(realPathToUploads + "/" +
+                    userDTO.getUserCode() + "/", userDTO.getUserCode());
+                userDTO.setAvatar(multipartFile);
                 response.setUserDTO(userDTO);
                 response.setSuccessMessage("User Found!");
                 response.setSuccessCode(200);
@@ -177,8 +196,15 @@ public class AccountController {
      */
     @GetMapping("/account/get-account")
     @Timed
-    public UserDTO getAccount() {
-        return new UserDTO();
+    public UserDTO getAccount(@RequestParam(value = "token") String token) {
+        UserDTO userDTO = userService.getUserByToken(token);
+
+        String realPathToUploads = request.getServletContext().getRealPath(UPLOAD_PATH);
+        MultipartFile multipartFile = cloudStoreService.getStoredFile(realPathToUploads + "/" +
+            userDTO.getUserCode() + "/", userDTO.getUserCode());
+        userDTO.setAvatar(multipartFile);
+
+        return userDTO;
     }
 
     /**
@@ -188,20 +214,28 @@ public class AccountController {
      * @throws EmailAlreadyUsedException 400 (Bad Request) if the email is already used
      * @throws RuntimeException 500 (Internal Server Error) if the user login wasn't found
      */
-    @PostMapping("/account/save-account")
+    @PostMapping("/account/update")
     @Timed
-    public void saveAccount(@Valid @RequestBody UserDTO userDTO) {
-//        final String userLogin = SecurityUtils.getCurrentUserLogin().orElseThrow(() -> new InternalServerErrorException("Current user login not found"));
-//        Optional<User> existingUser = userRepository.findOneByEmailIgnoreCase(userDTO.getEmail());
-//        if (existingUser.isPresent() && (!existingUser.get().getUserCode().equalsIgnoreCase(userLogin))) {
-//            throw new EmailAlreadyUsedException();
-//        }
-//        Optional<User> user = userRepository.findOneByUserCode(userLogin);
-//        if (!user.isPresent()) {
-//            throw new InternalServerErrorException("User could not be found");
-//        }
-//        userService.updateUser(userDTO.getFirstName(), userDTO.getLastName(), userDTO.getEmail()
-//            , userDTO.getImageUrl());
+    public CloudStoreDTO saveAccount(@RequestParam(value = "token") String token,
+                                     @Valid @RequestBody UserDTO userDTO) {
+        CloudStoreDTO response = new CloudStoreDTO();
+        UserDTO user = userService.getUserByToken(token);
+        Integer error;
+        if(user != null){
+            userDTO.setId(user.getId());
+            error = userService.updateUser(userDTO);
+            if(error != null){
+                response.setErrorCode(error);
+                response.setErrorMessage("ERROR!");
+            } else {
+                response.setSuccessCode(200);
+            }
+        } else {
+            response.setErrorMessage("User not in system!");
+            response.setErrorCode(500);
+        }
+
+        return response;
    }
 
     /**

@@ -13,6 +13,8 @@ import {MoveComponent} from '../../shared/modals/move/move-modal';
 import {DeleteComponent} from '../../shared/modals/delete/delete-modal';
 import {SettingsComponent} from '../settings/settings.component';
 import {CloudFileComponent} from "../file/file.component";
+import {Account} from "../account/account.model";
+import {AccountService} from "../account/account.service";
 
 @Component({
     selector: 'jhi-cloudstore',
@@ -21,6 +23,7 @@ import {CloudFileComponent} from "../file/file.component";
 })
 export class CloudStoreComponent implements OnInit {
     public tableData: TableData[];
+    Account: Account;
     folderType: string;
     fileToUpload: File;
     currentDirId: number;
@@ -30,19 +33,24 @@ export class CloudStoreComponent implements OnInit {
     canMoveMessage: boolean;
     whereToMoveMessage: boolean;
     filesToMove: any;
+    imageUploaded: boolean;
+    imageURL: string;
 
     constructor(
         private router: Router,
         private $localStorage: LocalStorageService,
         private cloudStoreService: CloudStoreService,
-        private nbModal: NgbModal
+        private nbModal: NgbModal,
+        private accountService: AccountService
     ) {}
 
     ngOnInit() {
         this.canMoveButton = false;
         this.canMoveMessage = false;
         this.whereToMoveMessage = false;
+        this.imageUploaded = false;
         this.filesToMove = [];
+        this.imageURL = "";
         this.currentDirId = this.$localStorage.retrieve('currentDirId');
         if(this.$localStorage.retrieve('crumbData')){
             this.crumbData = this.$localStorage.retrieve('crumbData');
@@ -52,12 +60,13 @@ export class CloudStoreComponent implements OnInit {
                 name: 'Cloud Store'
             }]
         }
-
+        this.Account = new Account();
         if (!this.$localStorage.retrieve('isLogged')) {
             if (this.$localStorage.retrieve('token') == '') {
                 this.router.navigate(['/login']);
             }
         }
+        this.getUserData();
         this.populateTable(this.currentDirId);
     }
 
@@ -71,7 +80,9 @@ export class CloudStoreComponent implements OnInit {
     }
 
     uploadFileToActivity() {
-        this.cloudStoreService.upload(this.fileToUpload);
+        this.cloudStoreService.upload(this.fileToUpload).subscribe((data: any) => {
+            location.reload();
+        })
     }
 
     openModal() {
@@ -100,7 +111,7 @@ export class CloudStoreComponent implements OnInit {
 
     openFolder(elem: any){
         let id = elem.id;
-        let name = elem.name;
+        let name = elem.fileName;
         const array = id.split('+');
         if(array[0] == 'folder'){
             this.crumbData.push({
@@ -195,6 +206,18 @@ export class CloudStoreComponent implements OnInit {
             }
         }
         this.$localStorage.store("currentUrl", this.currentPath);
+    }
+
+    getUserData() {
+        this.accountService.find().subscribe((data: any) =>{
+            if(data != null){
+                this.Account = data.body;
+                if(this.Account.avatar != null){
+                    this.imageUploaded = true;
+                    this.imageURL = 'data:image/png;base64,' + this.Account.avatar.bytes;
+                }
+            }
+        });
     }
 
     cancelMove() {

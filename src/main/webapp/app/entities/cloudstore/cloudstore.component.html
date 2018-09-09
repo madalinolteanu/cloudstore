@@ -1,5 +1,16 @@
 <div style="display: block">
     <div style="float: left; width: 15%">
+        <div class="avatarWrapper" style="float: left; margin-left: 18%;" for="uploadPhoto">
+            <form>
+                <label>
+                    <div class="avatar cursor-pointer">
+                        <img class="avatar-image" [hidden]="imageUploaded"
+                             src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/20625/avatar-bg.png">
+                        <img class="avatar-image" [src]="imageURL" [hidden]="!imageUploaded"> <br/>
+                    </div>
+                </label>
+            </form>
+        </div>
         <div class="btn-wrapper">
             <label for="openSettingButton" (click)="openSettings()" class="cloud-btn">Settings</label>
             <input type="button" id="openSettingButton" class="form-control">
@@ -9,7 +20,7 @@
         <div id="breadcrumb" class="cloud-breadcrumb">
             <ul>
                 <li *ngFor="let crumb of crumbData; let j = index" id="{{crumb.id}}">
-                    <a href="javascript:void(0)" (click)="openFolder('folder+' + crumb.id, crumb.name)">{{crumb.name}}</a>
+                    <a href="javascript:void(0)" (click)="openFolder({id: 'folder+' + crumb.id, fileName: crumb.name})">{{crumb.name}}</a>
                 </li>
 
             </ul>
@@ -29,10 +40,10 @@
                                 <span class="cloud-checkmark"></span>
                             </label>
                         </th>
-                        <th class="cloud-th-th" width="35%">
+                        <th class="cloud-th-th" width="50%">
                             <span class="text" style="margin-left: 2%;"> Folder Name </span>
                         </th>
-                        <th class="cloud-td-th" width="30%">
+                        <th class="cloud-td-th" width="17%">
                             <span class="text"> Creation Date </span>
                         </th>
                         <th class="cloud-th-th" width="30%"><span class="text" style="width: 20%;"> </span></th>
@@ -50,7 +61,7 @@
                             <p>
                                 <a href="javascript:void(0)">
                                     <span [hidden]="elem.fileType != 'folder'" class="glyphicon glyphicon-folder-open"></span>
-                                    <a [hidden]="elem.fileType == 'folder'" class="link-icon"></a>
+                                    <a [hidden]="elem.fileType == 'folder'" class="link-icon" [href]="elem.fileName"></a>
                                     <span>{{elem.fileName}}</span>
                                 </a>
                             </p>

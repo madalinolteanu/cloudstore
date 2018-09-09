@@ -23,6 +23,8 @@ public class SettingsDTO {
 
     private String fontType;
 
+    public SettingsDTO(){}
+
     public SettingsDTO(Settings settings) {
         this.id = settings.getId();
         this.userCode = settings.getUserCode();

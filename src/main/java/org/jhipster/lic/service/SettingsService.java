@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.jws.soap.SOAPBinding;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -52,6 +53,21 @@ public class SettingsService {
         settings.setFontType(DEFAULT_FONT_CODE);
         settings.setTheme(DEFAULT_THEME_CODE);
         settings.setUserCode(userDTO.getUserCode());
+        settingsRepository.save(settings);
+    }
+
+    public SettingsDTO getSettingsByUserCode(UserDTO userDTO) {
+        return new SettingsDTO(settingsRepository.findByUserCode(userDTO.getUserCode()));
+    }
+
+    public void updateSettingByUserCode(SettingsDTO settingsDTO, UserDTO userDTO){
+        Settings settings = new Settings();
+        settings.setUserCode(userDTO.getUserCode());
+        settings.setId(settingsDTO.getId());
+        settings.setDateFormat(settingsDTO.getDateFormat());
+        settings.setLanguage(settingsDTO.getLanguage());
+        settings.setFontType(settingsDTO.getFontType());
+        settings.setTheme(settingsDTO.getTheme());
         settingsRepository.save(settings);
     }
 

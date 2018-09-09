@@ -48,6 +48,7 @@ a[href$=".gif"].link-icon:before,
 a[href$=".jpg"].link-icon:before,
 a[href$=".jpeg"].link-icon:before,
 a[href$=".png"].link-icon:before,
+a[href$=".JPG"].link-icon:before,
 a[href$=".bmp"].link-icon:before,
 a[href$=".tif"].link-icon:before,
 a.link-icon.link-image[href]:before {

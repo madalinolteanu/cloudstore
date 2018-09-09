@@ -1,4 +1,5 @@
 import { BaseEntity } from './../../shared';
+import {Settings} from "../settings/settings.model";
 
 export class Account implements BaseEntity {
     constructor(
@@ -16,6 +17,8 @@ export class Account implements BaseEntity {
         public activationKey?: string,
         public resetKey?: string,
         public resetDate?: string,
-        public creationDate?: string
+        public creationDate?: string,
+        public avatar?: FormData,
+        public settings?: Settings
     ) {}
 }
