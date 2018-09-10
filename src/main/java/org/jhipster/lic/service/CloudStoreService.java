@@ -190,7 +190,7 @@ public class CloudStoreService {
                     dest = "\\" + srcFile.getFileName();
                 } else {
                     destDir = directoryRepository.findByIdAndUserCode(Long.parseLong(parentId), user.getUserCode());
-                    srcFile.setFileURL(destDir.getDirectoryUrl());
+                    srcFile.setFileURL(destDir.getDirectoryUrl() + destDir.getDirectoryName() + "/");
                     srcFile.setDirectoryID(Long.parseLong(parentId));
                     fileRepository.save(srcFile);
                     dest = destDir.getDirectoryUrl() + destDir.getDirectoryName() + "\\" + srcFile.getFileName();
@@ -257,7 +257,7 @@ public class CloudStoreService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return SERVER_PATH + DOWNLOAD_PATH + directory.getDirectoryUrl() + directory.getDirectoryName() + ".zip";
+        return DOWNLOAD_PATH + directory.getDirectoryUrl() + directory.getDirectoryName() + ".zip";
     }
 
     public boolean deleteStoredFile(String url, String name){

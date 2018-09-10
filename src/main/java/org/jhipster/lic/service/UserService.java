@@ -74,15 +74,12 @@ public class UserService {
     public UserDTO getByUsernameAndPassword(UserDTO requestedUser) throws FailedLoginException {
         UserDTO responseUser;
         String currentClearPassword = requestedUser.getPassword();
-        String originalString = requestedUser.hashCode() + "";
         User user;
         try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] encodedhash = digest.digest(
-                originalString.getBytes(StandardCharsets.UTF_8));
-            user = userRepository.findOneByUserCode(bytesToHex(encodedhash));
+            user = userRepository.findOneByUsername(requestedUser.getUsername());
             String token;
-            if(user != null && passwordEncoder.matches(currentClearPassword, user.getPassword())){
+            if(passwordEncoder.matches(currentClearPassword, user.getPassword())){
+                user = userRepository.findOneByUsernameAndPassword(requestedUser.getUsername(), user.getPassword());
                 responseUser = new UserDTO(user);
                 token = tokenProvider.createUserToken(responseUser.getUserCode(), true, responseUser.getUserType());
                 user.setToken(token);
@@ -124,13 +121,15 @@ public class UserService {
         user.setUserType(userDTO.getUserType());
         user.setFirstName(userDTO.getFirstName());
         user.setLastName(userDTO.getLastName());
-        if(!userRepository.findOneByEmail(userDTO.getEmail()).getUserCode().equals(user.getUserCode())){
-            return "502";
+        if(userRepository.findOneByEmail(userDTO.getEmail()) != null){
+            if(userRepository.findOneByEmail(userDTO.getEmail()).getUserCode().equals(user.getUserCode()))
+                return "502";
         }
         user.setEmail(userDTO.getEmail());
         user.setImageUrl(userDTO.getImageUrl() + "/" + user.getUserCode() + "/" + user.getUserCode());
-        if(!userRepository.findOneByUsername(userDTO.getUsername()).getUserCode().equals(user.getUserCode())){
-            return "501";
+        if(userRepository.findOneByUsername(userDTO.getUsername()) != null) {
+            if(userRepository.findOneByUsername(userDTO.getUsername()).getUserCode().equals(user.getUserCode()))
+                return "501";
         }
         user.setUsername(userDTO.getUsername());
         user.setActivationKey("12345");

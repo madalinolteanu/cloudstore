@@ -54,14 +54,18 @@ export class RegisterComponent implements OnInit {
         let isVisible = this.isVisible;
         this.accountService.register(account).subscribe((data: CloudStore) => {
             if(data.successCode == 200 ){
-                const formData: FormData = new FormData();
-                formData.append('fileKey', avatar, data.userDTO.userCode);
-                formData.set("name", data.userDTO.userCode, avatar.name);
-                $accountService.uploadAvatar(formData).subscribe((upload: CloudStore) => {
-                    if(upload.successCode == 200) {
-                        this.isVisible = false;
-                    }
-                });
+                if(avatar != undefined){
+                    const formData: FormData = new FormData();
+                    formData.append('fileKey', avatar, data.userDTO.userCode);
+                    formData.set("name", data.userDTO.userCode, avatar.name);
+                    $accountService.uploadAvatar(formData).subscribe((upload: CloudStore) => {
+                        if(upload.successCode == 200) {
+                            this.isVisible = false;
+                        }
+                    });
+                } else {
+                    this.isVisible = false;
+                }
             }else if (data.errorCode == 501) {
                 this.errorEmailExists = true;
             } else if (data.errorCode == 502) {

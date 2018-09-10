@@ -116,12 +116,15 @@ export class CloudStoreComponent implements OnInit {
         if(id.split("+")[0] == 'folder') {
             this.cloudStoreService.getFolderAsZip(id.split("+")[1]).subscribe((data: CloudStore) => {
                 if(data.successMessage){
-                    downloadFile = data.successMessage.substring(1, data.successMessage.length);
+                    downloadFile = data.successMessage;
                     document.getElementById("downloadFile").setAttribute('href',downloadFile);
                     document.getElementById("downloadFile").click();
                 }
             })
         } else {
+            let url = document.getElementById('download+'+id).getAttribute("href");
+            url = '/uploads/' + this.Account.userCode + url;
+            document.getElementById('download+'+id).setAttribute("href", url);
             document.getElementById('download+'+id).click();
         }
     }
@@ -222,12 +225,20 @@ export class CloudStoreComponent implements OnInit {
     }
 
     getUserData() {
+        const router = this.router;
         this.accountService.find().subscribe((data: any) =>{
             if(data != null){
-                this.Account = data.body;
-                if(this.Account.avatar != null){
-                    this.imageUploaded = true;
-                    this.imageURL = 'data:image/png;base64,' + this.Account.avatar.bytes;
+                if(data.status == 500){
+                    router.navigate(['/login']);
+                } else {
+                    this.Account = data.body;
+                    if(this.Account.avatar != null){
+                        this.imageUploaded = true;
+                        this.imageURL = 'data:image/png;base64,' + this.Account.avatar.bytes;
+                    }
+                    if(this.Account.settings != null){
+                        document.body.setAttribute("style", "font-family: " + this.Account.settings.fontType);
+                    }
                 }
             }
         });

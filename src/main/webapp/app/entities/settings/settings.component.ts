@@ -210,5 +210,6 @@ export class SettingsComponent implements OnInit, AfterViewChecked{
 
     changeFont(){
         this.settings.fontType = this.fonts[event.target.selectedIndex].fontCode;
+        document.body.setAttribute("style", "font-family: " + this.settings.fontType);
     }
 }

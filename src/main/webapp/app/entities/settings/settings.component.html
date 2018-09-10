@@ -214,17 +214,17 @@
                                     <form name="form" role="form" (ngSubmit)="register()" #registerForm="ngForm" *ngIf="!success">
                                         <div class="form-group">
                                             <label class="form-control-label">Change Password</label>
-                                            <input type="password" class="form-control" id="oldpassword" name="oldpassword" #oldpassword="ngModel"
+                                            <input type="password" class="form-control" id="oldPassword" name="oldPassword" #oldPassword="ngModel"
                                                    placeholder="Old Password"
-                                                   [(ngModel)]="account.oldpassword" minlength=8 maxlength=128 required>
-                                            <div *ngIf="oldpassword.dirty && oldpassword.invalid">
-                                                <small class="form-text text-danger" *ngIf="oldpassword.errors.required">
+                                                   [(ngModel)]="account.oldPassword" minlength=8 maxlength=128 required>
+                                            <div *ngIf="oldPassword.dirty && oldPassword.invalid">
+                                                <small class="form-text text-danger" *ngIf="oldPassword.errors.required">
                                                     Your password is required.
                                                 </small>
-                                                <small class="form-text text-danger" *ngIf="oldpassword.errors.minlength">
+                                                <small class="form-text text-danger" *ngIf="oldPassword.errors.minlength">
                                                     Your password is required to be at least 8 characters.
                                                 </small>
-                                                <small class="form-text text-danger" *ngIf="oldpassword.errors.maxlength">
+                                                <small class="form-text text-danger" *ngIf="oldPassword.errors.maxlength">
                                                     Your password cannot be longer than 128 characters.
                                                 </small>
                                             </div>
