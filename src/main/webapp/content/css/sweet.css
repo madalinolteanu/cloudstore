@@ -1,0 +1,48 @@
+.cloud-btn:hover {
+    background: deeppink;
+    cursor: pointer;
+}
+
+.cloud-logout-btn:hover {
+    background: deeppink;
+    cursor: pointer;
+}
+
+.table-wrapper tr:hover {
+    background-color: deeppink;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: deeppink;
+}
+
+.footer {
+    border-top: 1px solid rgba(0, 0, 0, 0.125);
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 60px;
+    background-color: deeppink;
+}
+
+.cloud-navbar {
+    color: deeppink;
+}
+
+/* Style the checkmark/indicator */
+.cloud-checkbox .cloud-checkmark:after {
+    left: 6px;
+    top: 3px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 3px 3px 0;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+
+td span {
+    background-color: deeppink;
+}

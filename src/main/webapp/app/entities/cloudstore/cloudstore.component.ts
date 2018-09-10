@@ -238,6 +238,7 @@ export class CloudStoreComponent implements OnInit {
                     }
                     if(this.Account.settings != null){
                         document.body.setAttribute("style", "font-family: " + this.Account.settings.fontType);
+                        require("style-loader!../../../content/css/" + this.Account.settings.theme.toLocaleLowerCase() + ".css");
                     }
                 }
             }

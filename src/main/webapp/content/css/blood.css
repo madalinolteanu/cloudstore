@@ -1,0 +1,31 @@
+.cloud-btn:hover {
+    background: red;
+    cursor: pointer;
+}
+
+.cloud-logout-btn:hover {
+    background: red;
+    cursor: pointer;
+}
+
+.table-wrapper tr:hover {
+    background-color: red;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: red;
+}
+
+.footer {
+    border-top: 1px solid rgba(0, 0, 0, 0.125);
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 60px;
+    background-color: red;
+}
+
+.cloud-navbar {
+    color: red;
+}

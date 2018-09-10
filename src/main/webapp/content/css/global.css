@@ -83,6 +83,10 @@ Generic styles
     opacity: 1;
 }
 
+.cloud-navabar {
+    color: lightblue;
+}
+
 .footer {
     border-top: 1px solid rgba(0, 0, 0, 0.125);
     position: absolute;
@@ -342,6 +346,11 @@ Style the buttons inside the ta
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+    background-color: white;
+}
+
+.cloud-td-th span {
+    background-color: white;
 }
 
 /* Hide the browser's default checkbox */
