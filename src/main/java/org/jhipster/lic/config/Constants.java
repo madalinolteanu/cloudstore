@@ -17,6 +17,7 @@ public final class Constants {
     public static final String DEFAULT_LANGUAGE = "en";
     public static final String SERVER_PATH = "localhost:8080";
     public static final String UPLOAD_PATH = "/uploads";
+    public static final String DOWNLOAD_PATH = "/downloads";
 
     /*SETTINGS DEFAULT*/
 

@@ -165,19 +165,6 @@ public class UserService {
     }
 
     /**
-     * Update basic information (first name, last name, email, language) for the current user.
-     *
-     * @param firstName first name of user
-     * @param lastName last name of user
-     * @param email email id of user
-     * @param imageUrl image URL of user
-     */
-    public void updateUser(String firstName, String lastName, String email, String imageUrl) {
-
-//        userRepository::findOneByUserCode(SecurityUtils.getCurrentUserLogin());
-    }
-
-    /**
      * Update all information for a specific user, and return the modified user.
      *
      * @param userDTO user to update

@@ -188,9 +188,9 @@ Generic styles
     color: gray;
     background-color: white;
     border-radius: 20px;
-    font-size: 15px;
+    font-size: 14px;
     font-weight: bold;
-    width: 70px;
+    width: 80px;
     text-align: center;
     cursor: pointer;
     margin-top: 10px;
@@ -470,6 +470,11 @@ Cloud Table Overflow
 
 #moveLabel:hover {
     background-color: green;
+    cursor: pointer;
+}
+
+#downloadLabel:hover {
+    background-color: orangered;
     cursor: pointer;
 }
 

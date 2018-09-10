@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import static org.jhipster.lic.config.Constants.DOWNLOAD_PATH;
 import static org.jhipster.lic.config.Constants.UPLOAD_PATH;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
@@ -74,6 +75,8 @@ public class CloudStoreController {
             fileDTO.setUserCode(userService.getUserCodeByToken(token));
             if(fileDTO.getDirectoryId() == -1)
                 fileDTO.setDirectoryId(null);
+            String realPathToUploads = request.getServletContext().getRealPath(UPLOAD_PATH);
+            fileDTO.setFileUrl(realPathToUploads + "/" + userDTO.getUserCode() + fileDTO.getFileUrl());
             cloudStoreService.uploadFile(fileDTO);
             response.setErrorMessage("File Uploaded Successfully!");
             response.setErrorCode(200);
@@ -125,6 +128,27 @@ public class CloudStoreController {
         return response;
     }
 
+    /**
+     * GET  /directories : get all directories
+     *
+     * @param token the activation key
+     * @throws RuntimeException 500 (Internal Server Error) if the user couldn't be activated
+     */
+    @GetMapping("/directory/download")
+    @Timed
+    public CloudStoreDTO downloadDirectory(@RequestParam(value = "token") String token,
+                                        @RequestParam(value = "directoryId") Long directoryId) {
+        CloudStoreDTO response = new CloudStoreDTO();
+        UserDTO userDTO = userService.getUserByToken(token);
+        if(userDTO != null){
+            String base = request.getServletContext().getRealPath(DOWNLOAD_PATH);
+            String sourcePath = request.getServletContext().getRealPath(UPLOAD_PATH);
+            String path = cloudStoreService.getZip(userDTO, directoryId, base, sourcePath);
+            response.setSuccessMessage(path);
+            response.setSuccessCode(200);
+        }
+        return response;
+    }
     /**
      * GET  /files : get all files
      *

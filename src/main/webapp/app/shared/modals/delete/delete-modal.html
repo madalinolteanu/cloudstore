@@ -12,11 +12,15 @@
         <div class="col-md-8">
             <form class="form ng-pristine ng-valid ng-touched" novalidate="" role="form">
                 <div class="form-group">
-                    <label jhitranslate="global.form.username"
-                           ng-reflect-jhi-translate="global.form.username">
-                        <p><strong style="text-align: center">Deleting this Folder will also delete</strong></p>
+                    <label [hidden]="!isFolder" style="text-align: center">
+                        <p><strong>Deleting this Folder will also delete</strong></p>
                         <p><strong> all sub folders and file!!</strong></p>
-                        <p><strong style="text-align: center">Confirm if you want to delete this Folder</strong></p>
+                        <p><strong>Confirm if you want to delete this Folder</strong></p>
+                    </label>
+
+                    <label [hidden]="!isFile" style="text-align: center">
+                        <p><strong>Confirm that you want to permanently</strong></p>
+                        <p><strong>delete this file</strong></p>
                     </label>
                 </div>
                 <button class="btn btn-primary" jhitranslate="login.form.button" (click)="deleteFile()" style="float: right"

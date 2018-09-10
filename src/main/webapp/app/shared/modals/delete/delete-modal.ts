@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {NgbActiveModal, NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {CloudStoreService} from '../../../entities/cloudstore/cloudstore.service';
 import {CloudStore} from '../../../entities/cloudstore/cloudstore.model';
@@ -11,6 +11,10 @@ import {LocalStorageService} from 'ngx-webstorage';
     styles: []
 })
 export class DeleteComponent implements OnInit {
+    id: number;
+    type: string;
+    isFile: boolean;
+    isFolder: boolean;
     constructor(
         public activeModal: NgbActiveModal,
         private deleteModal: NgbModal,
@@ -19,7 +23,16 @@ export class DeleteComponent implements OnInit {
         private $localStorage: LocalStorageService
     ) {}
 
-    ngOnInit() {}
+    ngOnInit() {
+        debugger;
+        this.type = this.$localStorage.retrieve("selectedFile").split('+')[0];
+        this.id = this.$localStorage.retrieve("selectedFile").split('+')[1];
+        if(this.type != "folder") {
+            this.isFile = true;
+        } else {
+            this.isFolder = true;
+        }
+    }
 
     modalDismiss(){
         this.activeModal.dismiss('cancel');

@@ -35,12 +35,17 @@ export class CloudStoreService {
     }
 
     uploadFile(fileToUpload: File): any {
+        debugger;
         const formData: FormData = new FormData();
         formData.append('fileKey', fileToUpload, fileToUpload.name);
         const token = this.$localStorage.retrieve('token');
         const userFile = new UserFile();
         userFile.fileName = fileToUpload.name;
-        userFile.fileType = fileToUpload.type;
+        if(fileToUpload.type == "")
+            userFile.fileType = "UNKNOWN";
+        else {
+            userFile.fileType = fileToUpload.type;
+        }
         userFile.fileUrl = this.$localStorage.retrieve('currentUrl');
         userFile.directoryId = this.$localStorage.retrieve('currentDirId');
         return this.http.post(this.resourceUrl + '/file/upload?token=' + token, userFile).subscribe((data: CloudStore) => {
@@ -74,5 +79,10 @@ export class CloudStoreService {
         const token = this.$localStorage.retrieve('token');
         return this.http.post(this.resourceUrl + '/directory/move?token=' + token +
             '&directoryId=' + parentId, filesToMove);
+    }
+
+    getFolderAsZip(id: any): any {
+        const token = this.$localStorage.retrieve('token');
+        return this.http.get(this.resourceUrl + '/directory/download?token=' + token + '&directoryId=' + id);
     }
 }

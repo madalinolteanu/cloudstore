@@ -13,6 +13,7 @@ import org.jhipster.lic.service.dto.DirectoryDTO;
 import org.jhipster.lic.service.dto.FileDTO;
 import org.jhipster.lic.service.dto.UserDTO;
 import org.jhipster.lic.service.util.CreateFiles;
+import org.jhipster.lic.service.util.ZipUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.CacheManager;
@@ -21,9 +22,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
+
+import static org.jhipster.lic.config.Constants.DOWNLOAD_PATH;
+import static org.jhipster.lic.config.Constants.SERVER_PATH;
+import static org.jhipster.lic.config.Constants.UPLOAD_PATH;
+import static org.jhipster.lic.service.util.ZipUtil.setSourceFolder;
 
 /**
  * Service class for managing DataBlocs.
@@ -39,6 +50,10 @@ public class CloudStoreService {
     private final FileRepository fileRepository;
 
     private final UserRepository userRepository;
+
+    private ArrayList<String> fileList;
+
+    private String sourceFolder;
 
     public CloudStoreService(DirectoryRepository directoryRepository,
                              FileRepository fileRepository, UserRepository userRepository) {
@@ -156,11 +171,6 @@ public class CloudStoreService {
         return (directory!=null && directory.getId()!=null ? Math.max(Integer.parseInt(directory.getId() + ""), 100000) : 100000)+1;
     }
 
-    private boolean deleteStoredDirectory(String url, String name){
-
-        return true;
-    }
-
     public boolean moveDirectories(UserDTO userDTO, String[] idList, String parentId){
         User user = userRepository.findOneByToken(userDTO.getToken());
         for(String elem : idList) {
@@ -206,5 +216,168 @@ public class CloudStoreService {
         } catch( IOException e){
             return null;
         }
+    }
+
+    public String getZip(UserDTO userDTO, Long dirID, String basePath, String sourcePath){
+        Directory directory = directoryRepository.findByIdAndUserCode(dirID, userDTO.getUserCode());
+        setSourceFolder(sourcePath + "\\" + userDTO.getUserCode() + directory.getDirectoryUrl() + directory.getDirectoryName());
+        setFileList(new ArrayList<>());
+        try {
+            zip(basePath + "\\" + directory.getDirectoryName() + ".zip",
+                sourcePath + directory.getDirectoryUrl() + directory.getDirectoryName(), userDTO, dirID);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return SERVER_PATH + DOWNLOAD_PATH + directory.getDirectoryUrl() + directory.getDirectoryName() + ".zip";
+    }
+
+    private boolean deleteStoredDirectory(String url, String name){
+        CreateFiles createFiles = new CreateFiles();
+        return createFiles.deleteFile(url, name);
+    }
+
+    public boolean zip(String zipFile, String source, UserDTO userDTO, Long dirId) throws IOException{
+
+        byte[] buffer = new byte[1024];
+
+        FileInputStream fis = null;
+
+        ZipOutputStream zos = null;
+
+        fileList = new ArrayList<>();
+
+        try{
+
+            zos = new ZipOutputStream(new FileOutputStream(zipFile));
+
+            if (sourceFolder == null) {
+
+                zos.close();
+
+                return false;
+
+            }
+
+            generateFileAndFolderList(new java.io.File(sourceFolder), userDTO, dirId);
+
+            for (String unzippedFile: fileList) {
+
+                System.out.println(sourceFolder + unzippedFile);
+
+                ZipEntry entry = new ZipEntry(unzippedFile);
+
+                zos.putNextEntry(entry);
+
+                if ((unzippedFile.substring(unzippedFile.length()-1)).equals(java.io.File.separator))continue;
+
+                try{
+
+                    fis = new FileInputStream(sourceFolder + unzippedFile);
+
+                    int len=0;
+
+                    while ((len = fis.read(buffer))>0) {
+
+                        zos.write(buffer,0,len);
+
+                    }
+
+                }catch(IOException e){
+
+                    e.printStackTrace();
+
+                    return false;
+
+                }finally{
+
+                    if (fis!=null) fis.close();
+
+                }
+
+            }
+
+            zos.closeEntry();
+
+        }catch(IOException e){
+
+            e.printStackTrace();
+
+            return false;
+
+        }finally{
+
+            zos.close();
+
+            fileList = null;
+
+            sourceFolder = null;
+
+        }
+
+        return true;
+
+    }
+
+    public void generateFileAndFolderList(java.io.File node, UserDTO userDTO, Long dirId)
+
+    {
+
+// add file only
+
+        if (node.getName().split("\\.").length > 1)
+
+        {
+
+            fileList.add(generateZipEntry(node.getAbsoluteFile().toString()));
+
+        }
+
+        if (node.getName().split("\\.").length == 1)
+
+        {
+
+            String dir = node.getAbsoluteFile().toString();
+
+            fileList.add(dir.substring(sourceFolder.length(), dir.length()) + java.io.File.separator);
+
+            if(dirId != null) {
+                List<File> files = fileRepository.findAllByUserCodeAndDirectoryID(userDTO.getUserCode(), dirId);
+
+
+                if (files != null) {
+                    for (File file : files) {
+                        generateFileAndFolderList(new java.io.File(node, file.getFileName()), userDTO, null);
+                    }
+                }
+
+                List<Directory> directories = directoryRepository.findAllByUserCodeAndDirectoryParent(userDTO.getUserCode(), dirId);
+
+                if (directories != null) {
+                    for (Directory directory : directories) {
+                        generateFileAndFolderList(new java.io.File(node, directory.getDirectoryName()), userDTO, directory.getId());
+                    }
+                }
+            }
+
+        }
+
+    }
+
+//Generate file name based on source folder
+
+    private String generateZipEntry(String file)
+
+    {
+
+        return file.substring(sourceFolder.length(), file.length());
+
+    }
+
+    private void setSourceFolder(String sourceFolder) {
+        this.sourceFolder = sourceFolder;
+    }
+
+    private void setFileList(ArrayList<String> fileList) {
+        this.fileList = fileList;
     }
 }

@@ -15,6 +15,7 @@ import {SettingsComponent} from '../settings/settings.component';
 import {CloudFileComponent} from "../file/file.component";
 import {Account} from "../account/account.model";
 import {AccountService} from "../account/account.service";
+import {BASE_PATH, LOCAL_PATH, SERVER_PATH} from "../../shared/constants/pagination.constants";
 
 @Component({
     selector: 'jhi-cloudstore',
@@ -106,7 +107,22 @@ export class CloudStoreComponent implements OnInit {
     delete(id: string) {
         this.$localStorage.store('selectedFile', id);
         this.nbModal.open(DeleteComponent);
+    }
 
+    download(id: any) {
+        if(id.split("+")[0] == 'folder') {
+            this.cloudStoreService.getFolderAsZip(id.split("+")[1]).subscribe((data: CloudStore) => {
+                if(data.successMessage){
+                    const a = document.createElement("a");
+                    a.href = data.successMessage;
+                    a['download'] = data.successMessage;
+                    a.click();
+                    a.removeNode();
+                }
+            })
+        } else {
+            document.getElementById('download+'+id).click();
+        }
     }
 
     openFolder(elem: any){
@@ -155,7 +171,7 @@ export class CloudStoreComponent implements OnInit {
                     tableData[index].id = folderType + '+' + folder.id;
                     tableData[index].fileName = folder.directoryName;
                     tableData[index].fileType = folderType;
-                    tableData[index].fileUrl = folder.directoryUrl;
+                    tableData[index].fileUrl = '/uploads' + folder.directoryUrl + folder.directoryName + ".zip";
                     tableData[index].parentId = folder.directoryParent;
                     tableData[index].creationDate = folder.creationDate.substring(0, 10);
                     index++;
@@ -167,11 +183,12 @@ export class CloudStoreComponent implements OnInit {
                             tableData[index].index = index;
                             tableData[index].id = file.fileType + '+' + file.id;
                             tableData[index].fileName = file.fileName;
-                            tableData[index].fileUrl = file.fileType;
-                            tableData[index].fileName = file.fileName;
+                            tableData[index].fileUrl = file.fileUrl + file.fileName;
+                            tableData[index].fileType = file.fileType;
                             tableData[index].parentId = file.directoryId;
                             tableData[index].creationDate = file.creationDate.substring(0, 10);
                             tableData[index].data = file.data;
+                            tableData[index].fileUrl = tableData[index].fileUrl.replace(LOCAL_PATH, "");
                             index++;
                         }
                     }
