@@ -20,7 +20,8 @@ export class RegisterComponent implements OnInit {
     imageURL: string;
     imageUploaded: boolean;
     imageToUpload;
-    isEmailExist: boolean;
+    errorEmailExists: boolean;
+    errorUserExists: boolean;
 
     constructor(private languageService: JhiLanguageService,
                 private accountService: AccountService,
@@ -34,7 +35,8 @@ export class RegisterComponent implements OnInit {
         this.isVisible = true;
         this.displayGlyph = true;
         this.registerAccount = {};
-        this.isEmailExist = false;
+        this.errorEmailExists = false;
+        this.usernameAlreadyExist = false;
         this.systemLogin();
     }
 
@@ -57,11 +59,13 @@ export class RegisterComponent implements OnInit {
                 formData.set("name", data.userDTO.userCode, avatar.name);
                 $accountService.uploadAvatar(formData).subscribe((upload: CloudStore) => {
                     if(upload.successCode == 200) {
-                        isVisible = true;
+                        this.isVisible = false;
                     }
                 });
-            } else {
-                this.isEmailExist = true;
+            }else if (data.errorCode == 501) {
+                this.errorEmailExists = true;
+            } else if (data.errorCode == 502) {
+                this.errorUserExists = true;
             }
         });
     }

@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.security.auth.login.FailedLoginException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+
 import org.jhipster.lic.service.dto.PasswordChangeDTO;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -66,7 +67,7 @@ public class AccountController {
      * POST  /register : register the user.
      *
      * @param userDTO the managed user View Model
-     * @throws InvalidPasswordException 400 (Bad Request) if the password is incorrect
+     * @throws InvalidPasswordException  400 (Bad Request) if the password is incorrect
      * @throws EmailAlreadyUsedException 400 (Bad Request) if the email is already used
      * @throws LoginAlreadyUsedException 400 (Bad Request) if the login is already used
      */
@@ -87,26 +88,37 @@ public class AccountController {
             encodedhash = digest.digest(
                 originalString.getBytes(StandardCharsets.UTF_8));
             user = userService.findOneByUserCode(encodedhash);
-        } catch (Exception e){
+        } catch (Exception e) {
             response.setErrorMessage("Error generating SHA");
             response.setErrorCode(200);
             return response;
         }
 
-        if(user != null) {
-            throw new LoginAlreadyUsedException();
+        if (user != null) {
+            response.setSuccessMessage("Username already exist!");
+            response.setErrorCode(501);
         } else {
             String realPathToUploads = request.getServletContext().getRealPath(UPLOAD_PATH);
             userDTO.setImageUrl(realPathToUploads);
-            user = userService.createUser(userDTO, encodedhash);
-            mailService.sendActivationEmail(user);
-            if (!new File(UPLOAD_PATH).exists()) {
-                new File(UPLOAD_PATH).mkdir();
+            String error = userService.createUser(userDTO, encodedhash);
+            if (error.equals("501")) {
+                response.setSuccessMessage("Username already exist!");
+                response.setErrorCode(501);
+            } else if (error.equals("502")) {
+                response.setSuccessMessage("Email already exist!");
+                response.setErrorCode(502);
+            } else {
+                user = userService.getUserByUserCode(error);
+
+                mailService.sendActivationEmail(user);
+                if (!new File(UPLOAD_PATH).exists()) {
+                    new File(UPLOAD_PATH).mkdir();
+                }
+                cloudStoreService.createUserDir(realPathToUploads, user.getUserCode());
+                response.setSuccessMessage("User successfully added!");
+                response.setSuccessCode(200);
+                response.setUserDTO(user);
             }
-            cloudStoreService.createUserDir(realPathToUploads, user.getUserCode());
-            response.setSuccessMessage("User successfully added!");
-            response.setSuccessCode(200);
-            response.setUserDTO(user);
         }
 
         return response;
@@ -115,7 +127,7 @@ public class AccountController {
     @RequestMapping(value = "/account/register/upload-avatar", method = POST, consumes = "multipart/form-data")
     public CloudStoreDTO uploadAvatar(@RequestParam(value = "fileKey") MultipartFile uploadedFile) {
         CloudStoreDTO response = new CloudStoreDTO();
-        if(uploadedFile != null){
+        if (uploadedFile != null) {
             UserDTO userDTO = userService.getUserByUserCode(uploadedFile.getOriginalFilename());
             String realPathToUploads = request.getServletContext().getRealPath(UPLOAD_PATH);
             cloudStoreService.createFileToPath(realPathToUploads, uploadedFile, userDTO, "/");
@@ -152,7 +164,7 @@ public class AccountController {
         log.debug("REST request to check if the current user is authenticated");
         try {
             UserDTO userDTO = userService.getByUsernameAndPassword(user);
-            if( userDTO != null){
+            if (userDTO != null) {
                 String realPathToUploads = request.getServletContext().getRealPath(UPLOAD_PATH);
                 MultipartFile multipartFile = cloudStoreService.getStoredFile(realPathToUploads + "/" +
                     userDTO.getUserCode() + "/", userDTO.getUserCode());
@@ -161,7 +173,7 @@ public class AccountController {
                 response.setSuccessMessage("User Found!");
                 response.setSuccessCode(200);
             }
-        } catch (FailedLoginException e){
+        } catch (FailedLoginException e) {
             response.setErrorCode(500);
             response.setErrorMessage("User not Found!");
         }
@@ -175,8 +187,8 @@ public class AccountController {
         log.debug("REST request to check if the current user is authenticated");
 
         UserDTO userDTO = userService.removeUserToken(token);
-        if( userDTO != null){
-            if(userDTO.getToken() == null){
+        if (userDTO != null) {
+            if (userDTO.getToken() == null) {
                 response.setUserDTO(userDTO);
                 response.setSuccessMessage("Token Removed!");
                 response.setSuccessCode(200);
@@ -212,7 +224,7 @@ public class AccountController {
      *
      * @param userDTO the current user information
      * @throws EmailAlreadyUsedException 400 (Bad Request) if the email is already used
-     * @throws RuntimeException 500 (Internal Server Error) if the user login wasn't found
+     * @throws RuntimeException          500 (Internal Server Error) if the user login wasn't found
      */
     @PostMapping("/account/update")
     @Timed
@@ -221,10 +233,15 @@ public class AccountController {
         CloudStoreDTO response = new CloudStoreDTO();
         UserDTO user = userService.getUserByToken(token);
         Integer error;
-        if(user != null){
+        if (user != null) {
             userDTO.setId(user.getId());
             error = userService.updateUser(userDTO);
-            if(error != null){
+            if (userDTO.getImageUrl() == null) {
+                String realPathToUploads = request.getServletContext().getRealPath(UPLOAD_PATH);
+                cloudStoreService.deleteStoredFile(realPathToUploads + "/" +
+                    userDTO.getUserCode() + "/", userDTO.getUserCode());
+            }
+            if (error != null) {
                 response.setErrorCode(error);
                 response.setErrorMessage("ERROR!");
             } else {
@@ -236,7 +253,7 @@ public class AccountController {
         }
 
         return response;
-   }
+    }
 
     /**
      * POST  /account/change-password : changes the current user's password
@@ -252,7 +269,7 @@ public class AccountController {
         }
         userService.changePassword(passwordChangeDto.getCurrentPassword(), passwordChangeDto.getNewPassword());
         return null;
-   }
+    }
 
     /**
      * POST   /account/reset-password/init : Send an email to reset the password of the user
@@ -263,10 +280,10 @@ public class AccountController {
     @PostMapping(path = "/account/reset-password")
     @Timed
     public void requestPasswordReset(@RequestBody String mail) {
-       mailService.sendPasswordResetMail(
-           userService.requestPasswordReset(mail)
-               .orElseThrow(EmailNotFoundException::new)
-       );
+        mailService.sendPasswordResetMail(
+            userService.requestPasswordReset(mail)
+                .orElseThrow(EmailNotFoundException::new)
+        );
     }
 
     @PostMapping(path = "/account/forget-password")

@@ -22,7 +22,7 @@
                 </div>
 
                 <div class="alert alert-danger" *ngIf="errorUserExists">
-                    <strong>Login name already registered!</strong> Please choose another one.
+                    <strong>Username already registered!</strong> Please choose another one.
                 </div>
 
                 <div class="alert alert-danger" *ngIf="errorEmailExists">
@@ -40,7 +40,7 @@
                     <div class="form-group">
                         <input type="text" class="form-control" [(ngModel)]="registerAccount.firstName" id="firstName"
                                name="firstName" #firstName="ngModel" placeholder="First Name"
-                               required minlength="1" maxlength="128" pattern="^[_.@A-Za-z0-9-]*$">
+                               required minlength="1" maxlength="128">
                         <div *ngIf="firstName.dirty && firstName.invalid">
                             <small class="form-text text-danger">
                                 First Name is required.
@@ -59,7 +59,7 @@
                     <div class="form-group">
                         <input type="text" class="form-control" [(ngModel)]="registerAccount.lastName" id="lastName"
                                name="lastName" #lastName="ngModel" placeholder="Last Name"
-                               required minlength="1" maxlength="128" pattern="^[_.@A-Za-z0-9-]*$">
+                               required minlength="1" maxlength="128">
                         <div *ngIf="lastName.dirty && lastName.invalid">
                             <small class="form-text text-danger">
                                 Last Name is required.
@@ -78,7 +78,7 @@
                     <div class="form-group">
                         <input type="text" class="form-control" [(ngModel)]="registerAccount.username" id="login"
                                name="login" #login="ngModel" placeholder="Username"
-                               required minlength="1" maxlength="50" pattern="^[_.@A-Za-z0-9-]*$">
+                               required minlength="1" maxlength="50">
                         <div *ngIf="login.dirty && login.invalid">
                             <small class="form-text text-danger">
                                 Your username is required.

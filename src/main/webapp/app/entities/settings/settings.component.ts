@@ -2,10 +2,15 @@ import {AfterViewChecked, Component, ElementRef, OnInit, ViewChild} from '@angul
 import {NgbActiveModal, NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {JhiEventManager, JhiLanguageService} from 'ng-jhipster';
 import {CloudStoreService} from "../cloudstore/cloudstore.service";
+import {SettingsService} from "./settings.service";
 import {Router} from "@angular/router";
 import {AccountService} from "../account/account.service";
 import {Account} from "../account/account.model";
 import {CloudStore} from "../cloudstore/cloudstore.model";
+import {Language} from "../language/language.model";
+import {Font} from "../font/font.model";
+import {Theme} from "../theme/theme.model";
+import {Settings} from "./settings.model";
 
 @Component({
     selector: 'jhi-settings',
@@ -21,7 +26,7 @@ export class SettingsComponent implements OnInit, AfterViewChecked{
     cssActiveP: string;
 
     account: Account;
-    settings: any;
+    settings: Settings;
     isVisible: boolean;
     loginUrl: '/login';
     displayGlyph: boolean;
@@ -29,6 +34,14 @@ export class SettingsComponent implements OnInit, AfterViewChecked{
     imageUploaded: boolean;
     imageToUpload: string;
     oldPassword: string;
+    imageChanged: boolean;
+
+    errorEmailExists: boolean;
+    oldNotMath: boolean;
+
+    languages: Language[];
+    fonts: Font[];
+    themes: Theme[];
 
     @ViewChild('jhi-settings') textarea: ElementRef;
 
@@ -38,6 +51,7 @@ export class SettingsComponent implements OnInit, AfterViewChecked{
         private cloudService: CloudStoreService,
         private accountService: AccountService,
         private router: Router,
+        private settingsService: SettingsService,
         private el: ElementRef
     ) {}
 
@@ -49,13 +63,20 @@ export class SettingsComponent implements OnInit, AfterViewChecked{
         this.isSecurity = false;
         this.isPersonal = false;
 
+        this.errorEmailExists = false;
+        this.oldNotMath = false;
+
         this.imageURL = '';
         this.imageUploaded = false;
         this.isVisible = true;
         this.displayGlyph = true;
-        this.settings = {};
+        this.settings = new Settings();
         this.oldPassword = '';
+        this.imageChanged = false;
         this.account = new Account();
+        this.getLanguages();
+        this.getFonts();
+        this.getThemes();
         this.populateWindow();
     }
 
@@ -96,13 +117,14 @@ export class SettingsComponent implements OnInit, AfterViewChecked{
     }
 
     populateWindow() {
-        this.accountService.find().subscribe((data: any) =>{
+        this.accountService.find().subscribe((data: Account) =>{
             if(data != null){
                 this.account = data.body;
                 if(this.account.avatar != null){
                     this.imageUploaded = true;
                     this.imageURL = 'data:image/png;base64,' + this.account.avatar.bytes;
                 }
+                this.settings = data.body.settings;
             }
         });
     }
@@ -116,6 +138,7 @@ export class SettingsComponent implements OnInit, AfterViewChecked{
         reader.onload = (event: any) => {
             this.imageURL = event.target.result;
             this.imageUploaded = true;
+            this.imageChanged = true;
         };
         if (files != null) {
             this.account.avatar = files.item(0);
@@ -126,23 +149,66 @@ export class SettingsComponent implements OnInit, AfterViewChecked{
         const $accountService = this.accountService;
         const account = this.account;
         const avatar = this.account.avatar;
+        if(this.imageChanged){
+            account.imageUrl = null;
+        }
         this.accountService.update(this.account).subscribe((data: CloudStore) =>{
             if(data.successCode == 200){
-                const formData: FormData = new FormData();
-                formData.append('fileKey', avatar, account.userCode);
-                formData.set("name", account.userCode, avatar.name);
-                $accountService.uploadAvatar(formData).subscribe((upload: CloudStore) => {
-                    if(upload.successCode == 200) {
-                        location.reload();
-                    }
-                });
+                if(this.imageChanged) {
+                    const formData: FormData = new FormData();
+                    formData.append('fileKey', avatar, account.userCode);
+                    formData.set("name", account.userCode, avatar.name);
+                    $accountService.uploadAvatar(formData).subscribe((upload: CloudStore) => {
+                        if (upload.successCode == 200) {
+                            location.reload();
+                        }
+                    });
+                } else {
+                    location.reload();
+                }
             } else if (data.errorCode == 500) {
 
             } else if (data.errorCode == 501) {
-
+                this.errorEmailExists = true;
             } else if (data.errorCode == 502) {
-
+                this.oldNotMath = true;
             }
         })
+    }
+
+    getLanguages() {
+        this.settingsService.getAllLanguages().subscribe((data: Language[]) => {
+            if(data != null){
+                this.languages = data;
+            }
+        });
+    }
+
+    getFonts() {
+        this.settingsService.getAllFonts().subscribe((data: Font[]) => {
+            if(data != null){
+                this.fonts = data;
+            }
+        });
+    }
+
+    getThemes() {
+        this.settingsService.getAllThemes().subscribe((data: Theme[]) => {
+            if(data != null){
+                this.themes = data;
+            }
+        });
+    }
+
+    changeLanguage(){
+        this.settings.language = this.languages[event.target.selectedIndex].languageCode;
+    }
+
+    changeTheme(){
+        this.settings.theme = this.themes[event.target.selectedIndex].themeCode;
+    }
+
+    changeFont(){
+        this.settings.fontType = this.fonts[event.target.selectedIndex].fontCode;
     }
 }

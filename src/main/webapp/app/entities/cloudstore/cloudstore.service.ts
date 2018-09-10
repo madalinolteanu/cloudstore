@@ -35,7 +35,6 @@ export class CloudStoreService {
     }
 
     uploadFile(fileToUpload: File): any {
-        debugger;
         const formData: FormData = new FormData();
         formData.append('fileKey', fileToUpload, fileToUpload.name);
         const token = this.$localStorage.retrieve('token');

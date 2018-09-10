@@ -75,8 +75,7 @@ public class CloudStoreController {
             fileDTO.setUserCode(userService.getUserCodeByToken(token));
             if(fileDTO.getDirectoryId() == -1)
                 fileDTO.setDirectoryId(null);
-            String realPathToUploads = request.getServletContext().getRealPath(UPLOAD_PATH);
-            fileDTO.setFileUrl(realPathToUploads + "/" + userDTO.getUserCode() + fileDTO.getFileUrl());
+            fileDTO.setFileUrl(fileDTO.getFileUrl());
             cloudStoreService.uploadFile(fileDTO);
             response.setErrorMessage("File Uploaded Successfully!");
             response.setErrorCode(200);
@@ -232,7 +231,8 @@ public class CloudStoreController {
         CloudStoreDTO response = new CloudStoreDTO();
         UserDTO userDTO = userService.getUserByToken(token);
         if(userDTO != null){
-            if(cloudStoreService.deleteFile(userDTO, Long.parseLong(fileId))){
+            String realPathToUploads = request.getServletContext().getRealPath(UPLOAD_PATH);
+            if(cloudStoreService.deleteFile(userDTO, Long.parseLong(fileId), realPathToUploads + "/" + userDTO.getUserCode())){
                 response.setSuccessMessage("SUCCESS");
                 response.setSuccessCode(200);
             } else {
@@ -256,7 +256,8 @@ public class CloudStoreController {
         if(userDTO != null){
             if(parentId.equals(-1 + ""))
                 parentId = null;
-            if(cloudStoreService.moveDirectories(userDTO, idList, parentId)){
+            String realPathToUploads = request.getServletContext().getRealPath(UPLOAD_PATH);
+            if(cloudStoreService.moveDirectories(userDTO, idList, parentId, realPathToUploads + "/" + userDTO.getUserCode())){
                 response.setSuccessMessage("SUCCESS");
                 response.setSuccessCode(200);
             } else {

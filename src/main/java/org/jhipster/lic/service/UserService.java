@@ -1,5 +1,6 @@
 package org.jhipster.lic.service;
 
+import afu.org.checkerframework.checker.igj.qual.I;
 import org.jhipster.lic.domain.Settings;
 import org.jhipster.lic.domain.User;
 import org.jhipster.lic.repository.UserRepository;
@@ -115,16 +116,22 @@ public class UserService {
         return null;
     }
 
-    public UserDTO createUser(UserDTO userDTO, byte[] encodedhash) {
+    public String createUser(UserDTO userDTO, byte[] encodedhash) {
         User user = new User();
-        UserDTO responeUser;
+        UserDTO responseUser;
         user.setId(Long.parseLong(getNextUserId() + ""));
         user.setUserCode(bytesToHex(encodedhash));
         user.setUserType(userDTO.getUserType());
         user.setFirstName(userDTO.getFirstName());
         user.setLastName(userDTO.getLastName());
+        if(!userRepository.findOneByEmail(userDTO.getEmail()).getUserCode().equals(user.getUserCode())){
+            return "502";
+        }
         user.setEmail(userDTO.getEmail());
         user.setImageUrl(userDTO.getImageUrl() + "/" + user.getUserCode() + "/" + user.getUserCode());
+        if(!userRepository.findOneByUsername(userDTO.getUsername()).getUserCode().equals(user.getUserCode())){
+            return "501";
+        }
         user.setUsername(userDTO.getUsername());
         user.setActivationKey("12345");
         user.setCreationDate(Instant.now());
@@ -136,9 +143,9 @@ public class UserService {
         this.clearUserCaches(user);
         log.debug("Created Information for User: {}", user);
 
-        responeUser = new UserDTO(user);
-        settingsService.addSettings(responeUser);
-        return responeUser;
+        responseUser = new UserDTO(user);
+        settingsService.addSettings(responseUser);
+        return user.getUserCode();
     }
 
     public UserDTO getUserByToken(String token){

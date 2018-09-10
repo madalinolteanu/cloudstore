@@ -24,7 +24,6 @@ export class DeleteComponent implements OnInit {
     ) {}
 
     ngOnInit() {
-        debugger;
         this.type = this.$localStorage.retrieve("selectedFile").split('+')[0];
         this.id = this.$localStorage.retrieve("selectedFile").split('+')[1];
         if(this.type != "folder") {

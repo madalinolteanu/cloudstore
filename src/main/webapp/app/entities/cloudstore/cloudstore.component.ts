@@ -15,7 +15,7 @@ import {SettingsComponent} from '../settings/settings.component';
 import {CloudFileComponent} from "../file/file.component";
 import {Account} from "../account/account.model";
 import {AccountService} from "../account/account.service";
-import {BASE_PATH, LOCAL_PATH, SERVER_PATH} from "../../shared/constants/pagination.constants";
+import {LOCAL_PATH, SERVER_PATH} from "../../shared/constants/pagination.constants";
 
 @Component({
     selector: 'jhi-cloudstore',
@@ -36,6 +36,7 @@ export class CloudStoreComponent implements OnInit {
     filesToMove: any;
     imageUploaded: boolean;
     imageURL: string;
+    downloadFile: string;
 
     constructor(
         private router: Router,
@@ -53,6 +54,7 @@ export class CloudStoreComponent implements OnInit {
         this.filesToMove = [];
         this.imageURL = "";
         this.currentDirId = this.$localStorage.retrieve('currentDirId');
+        this.downloadFile = '';
         if(this.$localStorage.retrieve('crumbData')){
             this.crumbData = this.$localStorage.retrieve('crumbData');
         } else {
@@ -110,14 +112,13 @@ export class CloudStoreComponent implements OnInit {
     }
 
     download(id: any) {
+        let downloadFile = this.downloadFile;
         if(id.split("+")[0] == 'folder') {
             this.cloudStoreService.getFolderAsZip(id.split("+")[1]).subscribe((data: CloudStore) => {
                 if(data.successMessage){
-                    const a = document.createElement("a");
-                    a.href = data.successMessage;
-                    a['download'] = data.successMessage;
-                    a.click();
-                    a.removeNode();
+                    downloadFile = data.successMessage.substring(1, data.successMessage.length);
+                    document.getElementById("downloadFile").setAttribute('href',downloadFile);
+                    document.getElementById("downloadFile").click();
                 }
             })
         } else {
@@ -150,12 +151,7 @@ export class CloudStoreComponent implements OnInit {
                     this.whereToMoveMessage = false;
                 }
             }
-        } else {
-
-            let selectedFile = elem;
-            this.nbModal.open(CloudFileComponent);
         }
-
     }
 
     populateTable(parentId: any) {

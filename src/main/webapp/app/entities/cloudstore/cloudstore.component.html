@@ -57,7 +57,7 @@
                                 <span class="cloud-checkmark"></span>
                             </label>
                         </td>
-                        <td class="cloud-td-th"  (click)="openFolder(elem)">
+                        <td class="cloud-td-th" (click)="openFolder(elem)">
                             <p>
                                 <a href="javascript:void(0)">
                                     <span [hidden]="elem.fileType != 'folder'" class="glyphicon glyphicon-folder-open"></span>
@@ -76,16 +76,16 @@
                                     <a id="download+{{elem.id}}" href="{{elem.fileUrl}}" class="form-control" download></a>
                                 </div>
                                 <div class="btn-file-wrapper">
-                                    <label for="move" class="cloud-file-btn"  (click)="move(elem.id)" id="moveLabel">Move</label>
-                                    <input type="button" id="move" class="form-control">
+                                    <label for="move+{{elem.id}}" class="cloud-file-btn"  (click)="move(elem.id)" id="moveLabel">Move</label>
+                                    <input type="button" id="move+{{elem.id}}" class="form-control">
                                 </div>
                                 <div class="btn-file-wrapper">
-                                    <label for="share" class="cloud-file-btn" id="shareLabel">Share</label>
-                                    <input type="button" id="share" class="form-control" (click)="share(elem.id)">
+                                    <label for="share+{{elem.id}}" class="cloud-file-btn" id="shareLabel">Share</label>
+                                    <input type="button" id="share+{{elem.id}}" class="form-control" (click)="share(elem.id)">
                                 </div>
                                 <div class="btn-file-wrapper delete">
-                                    <label for="delete" class="cloud-file-btn" id="deleteLabel">Delete</label>
-                                    <input type="button" id="delete" class="form-control" (click)="delete(elem.id)">
+                                    <label for="delete+{{elem.id}}" class="cloud-file-btn" id="deleteLabel">Delete</label>
+                                    <input type="button" id="delete+{{elem.id}}" class="form-control" (click)="delete(elem.id)">
                                 </div>
                             </div>
 
@@ -128,3 +128,4 @@
         </div>
     </div>
 </div>
+<a hidden href="{{downloadFile}}" download id="downloadFile"></a>

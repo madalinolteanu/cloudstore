@@ -122,7 +122,7 @@ public class CloudStoreService {
             for(Directory elem : directories) {
                 if(directoryRepository.findByDirectoryParentAndUserCode(elem.getId(), user.getUserCode()).size() == 0){
                     directoryRepository.delete(elem);
-                    deleteStoredDirectory(elem.getDirectoryUrl(), elem.getDirectoryName());
+                    deleteStoredFile(elem.getDirectoryUrl(), elem.getDirectoryName());
                 } else {
                     queue.add(elem.getId());
                 }
@@ -132,15 +132,15 @@ public class CloudStoreService {
                 break;
         }
         directoryRepository.delete(directory);
-        deleteStoredDirectory(directory.getDirectoryUrl(), directory.getDirectoryName());
+        deleteStoredFile(directory.getDirectoryUrl(), directory.getDirectoryName());
         return true;
     }
 
-    public boolean deleteFile(UserDTO userDTO, Long fileId){
+    public boolean deleteFile(UserDTO userDTO, Long fileId, String basePath){
         User user = userRepository.findOneByToken(userDTO.getToken());
         File file = fileRepository.findByIdAndUserCode(fileId, user.getUserCode());
         fileRepository.delete(file);
-        return deleteStoredDirectory(file.getFileURL(), file.getFileName());
+        return deleteStoredFile(basePath + file.getFileURL(), file.getFileName());
     }
 
     private Integer getNextFileId(){
@@ -171,17 +171,46 @@ public class CloudStoreService {
         return (directory!=null && directory.getId()!=null ? Math.max(Integer.parseInt(directory.getId() + ""), 100000) : 100000)+1;
     }
 
-    public boolean moveDirectories(UserDTO userDTO, String[] idList, String parentId){
+    public boolean moveDirectories(UserDTO userDTO, String[] idList, String parentId, String basePath){
         User user = userRepository.findOneByToken(userDTO.getToken());
+        String source;
+        String dest;
+        Directory destDir;
+        Directory sourceDir;
+        File srcFile;
         for(String elem : idList) {
-            Directory directory = directoryRepository.findByIdAndUserCode(Long.parseLong(elem), user.getUserCode());
-            if(parentId != null)
-                directory.setDirectoryParent(Long.parseLong(parentId));
-            else {
-                directory.setDirectoryParent(null);
+            sourceDir = directoryRepository.findByIdAndUserCode(Long.parseLong(elem), user.getUserCode());
+            if(sourceDir == null){
+                srcFile = fileRepository.findByIdAndUserCode(Long.parseLong(elem), userDTO.getUserCode());
+                source = srcFile.getFileURL() + srcFile.getFileName();
+                if(parentId == null){
+                    srcFile.setFileURL("\\");
+                    srcFile.setDirectoryID(null);
+                    fileRepository.save(srcFile);
+                    dest = "\\" + srcFile.getFileName();
+                } else {
+                    destDir = directoryRepository.findByIdAndUserCode(Long.parseLong(parentId), user.getUserCode());
+                    srcFile.setFileURL(destDir.getDirectoryUrl());
+                    srcFile.setDirectoryID(Long.parseLong(parentId));
+                    fileRepository.save(srcFile);
+                    dest = destDir.getDirectoryUrl() + destDir.getDirectoryName() + "\\" + srcFile.getFileName();
+                }
+            } else {
+                source = sourceDir.getDirectoryUrl();
+                if (parentId != null) {
+                    sourceDir.setDirectoryParent(Long.parseLong(parentId));
+                    destDir = directoryRepository.findByIdAndUserCode(Long.parseLong(parentId), user.getUserCode());
+                    dest = destDir.getDirectoryUrl() + destDir.getDirectoryName();
+                    sourceDir.setDirectoryUrl(dest);
+                    directoryRepository.save(sourceDir);
+                } else {
+                    sourceDir.setDirectoryParent(null);
+                    dest = "\\";
+                    sourceDir.setDirectoryUrl(dest);
+                    directoryRepository.save(sourceDir);
+                }
             }
-            directoryRepository.save(directory);
-            deleteStoredDirectory(directory.getDirectoryUrl(), directory.getDirectoryName());
+            moveDirectory(basePath + source, basePath + dest);
         }
 
         return true;
@@ -231,9 +260,14 @@ public class CloudStoreService {
         return SERVER_PATH + DOWNLOAD_PATH + directory.getDirectoryUrl() + directory.getDirectoryName() + ".zip";
     }
 
-    private boolean deleteStoredDirectory(String url, String name){
+    public boolean deleteStoredFile(String url, String name){
         CreateFiles createFiles = new CreateFiles();
         return createFiles.deleteFile(url, name);
+    }
+
+    private boolean moveDirectory(String src, String dest){
+        CreateFiles createFiles = new CreateFiles();
+        return createFiles.move(src, dest);
     }
 
     public boolean zip(String zipFile, String source, UserDTO userDTO, Long dirId) throws IOException{

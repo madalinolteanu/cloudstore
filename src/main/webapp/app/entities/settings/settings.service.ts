@@ -7,13 +7,19 @@ import { Observable } from 'rxjs/Rx';
     providedIn: 'root'
 })
 export class SettingsService {
-    private resourceUrl = '/api/cloudstore/settings/languages';
+    private resourceUrl = '/api/cloudstore/settings';
 
     constructor(private http: HttpClient) {}
 
-    getAllLanguages() {
-        return this.http.get(this.resourceUrl).subscribe(data => {
-            return data;
-        });
+    getAllLanguages(): any {
+        return this.http.get(this.resourceUrl + "/languages");
+    }
+
+    getAllFonts(): any {
+        return this.http.get(this.resourceUrl + '/fonts');
+    }
+
+    getAllThemes(): any {
+        return this.http.get(this.resourceUrl + '/themes');
     }
 }

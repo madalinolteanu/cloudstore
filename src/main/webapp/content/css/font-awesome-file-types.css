@@ -128,6 +128,8 @@ a[href$=".cpp"].link-icon:before,
 a[href$=".h"].link-icon:before,
 a[href$=".ini"].link-icon:before,
 a[href$=".config"].link-icon:before,
+a[href$=".sql"].link-icon:before,
+a[href$=".java"].link-icon:before,
 a.link-icon.link-code[href]:before {
     content: "\f1c9"; /*code*/
 }

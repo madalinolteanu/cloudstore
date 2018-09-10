@@ -20,11 +20,52 @@
                     <div class="tabcontent" [hidden]="!isGeneral">
                         <div>
                             <div class="row justify-content-center">
+                                <div class="col-md-8">
+                                    <div class="alert alert-danger" *ngIf="errorEmailExists">
+                                        <strong>Email is already in use!</strong> Please choose another one.
+                                    </div>
+
+                                    <div class="alert alert-danger" *ngIf="doNotMatch">
+                                        The password and its confirmation do not match!
+                                    </div>
+
+                                    <div class="alert alert-danger" *ngIf="oldNotMath">
+                                        <strong>The existing password is wrong!</strong>
+                                        <strong>Please retype the existing password!</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row justify-content-center">
                                 <div class="col-md-8" style="margin-top: 5%;margin-bottom: 10%;" *ngIf="isVisible">
                                     <form name="form" role="form" (ngSubmit)="register()" #registerForm="ngForm" *ngIf="!success">
                                         <div class="form-group">
-                                        </div>
-                                        <div class="form-group">
+                                            <div class="form-group">
+                                                <label>Language: </label>
+                                                <select style="height: 2%;" class="form-control" (change)="changeLanguage($event.target.value)">
+                                                    <option *ngFor="let language of languages" value={{language}}
+                                                            [selected]="language.languageCode == settings.language">
+                                                        {{language.languageName}}
+                                                    </option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Font: </label>
+                                                <select style="height: 2%;" class="form-control" (change)="changeFont($event.target.value)">
+                                                    <option *ngFor="let font of fonts" value={{font}}
+                                                            [selected]="font.fontCode == settings.fontType">
+                                                        {{font.fontName}}
+                                                    </option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Theme: </label>
+                                                <select style="height: 2%;" class="form-control" (change)="changeTheme($event.target.value)">
+                                                    <option *ngFor="let theme of themes" value={{theme}}
+                                                            [selected]="theme.themeCode == settings.theme">
+                                                        {{theme.themeName}}
+                                                    </option>
+                                                </select>
+                                            </div>
                                         </div>
                                     </form>
                                 </div>
@@ -35,20 +76,17 @@
                         <div>
                             <div class="row justify-content-center">
                                 <div class="col-md-8">
-                                    <div class="alert alert-success" *ngIf="success">
-                                        <strong>Changes saved!</strong> Please check your email for confirmation.
-                                    </div>
-
-                                    <div class="alert alert-danger" *ngIf="error">
-                                        <strong>Update failed!</strong> Please try again later.
-                                    </div>
-
                                     <div class="alert alert-danger" *ngIf="errorEmailExists">
                                         <strong>Email is already in use!</strong> Please choose another one.
                                     </div>
 
                                     <div class="alert alert-danger" *ngIf="doNotMatch">
                                         The password and its confirmation do not match!
+                                    </div>
+
+                                    <div class="alert alert-danger" *ngIf="oldNotMath">
+                                        <strong>The existing password is wrong!</strong>
+                                        <strong>Please retype the existing password!</strong>
                                     </div>
                                 </div>
                             </div>
@@ -59,7 +97,7 @@
                                             <label style="float:left; width: 20%" class="form-control-label" for="firstName" jhiTranslate="settings.form.firstname">First Name</label>
                                             <input type="text" class="form-control" [(ngModel)]="account.firstName" id="firstName"
                                                    name="firstName" #firstName="ngModel" placeholder="First Name"
-                                                   required minlength="1" maxlength="128" pattern="^[_.@A-Za-z0-9-]*$"
+                                                   required minlength="1" maxlength="128"
                                                    style="width: 80%">
                                             <div *ngIf="firstName.dirty && firstName.invalid">
                                                 <small class="form-text text-danger">
@@ -80,7 +118,7 @@
                                             <label style="float:left; width: 20%" class="form-control-label" for="lastName" jhiTranslate="settings.form.lastname">Last Name</label>
                                             <input style="width: 80%" type="text" class="form-control" [(ngModel)]="account.lastName" id="lastName"
                                                    name="lastName" #lastName="ngModel" placeholder="Last Name"
-                                                   required minlength="1" maxlength="128" pattern="^[_.@A-Za-z0-9-]*$">
+                                                   required minlength="1" maxlength="128">
                                             <div *ngIf="lastName.dirty && lastName.invalid">
                                                 <small class="form-text text-danger">
                                                     Last Name is required.
@@ -157,16 +195,17 @@
                         <div>
                             <div class="row justify-content-center">
                                 <div class="col-md-8">
-                                    <div class="alert alert-success" *ngIf="success">
-                                        <strong>Changes saved!</strong> Please check your email for confirmation.
-                                    </div>
-
-                                    <div class="alert alert-danger" *ngIf="error">
-                                        <strong>Update failed!</strong> Please try again later.
+                                    <div class="alert alert-danger" *ngIf="errorEmailExists">
+                                        <strong>Email is already in use!</strong> Please choose another one.
                                     </div>
 
                                     <div class="alert alert-danger" *ngIf="doNotMatch">
                                         The password and its confirmation do not match!
+                                    </div>
+
+                                    <div class="alert alert-danger" *ngIf="oldNotMath">
+                                        <strong>The existing password is wrong!</strong>
+                                        <strong>Please retype the existing password!</strong>
                                     </div>
                                 </div>
                             </div>
